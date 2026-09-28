@@ -1,0 +1,41 @@
+<ui:UXML
+    xmlns:ui="UnityEngine.UIElements">
+
+    <ui:VisualElement
+        name="grid-settings-root"
+        class="maze-panel">
+
+        <ui:Label
+            text="Grid Settings"
+            class="maze-panel__title"/>
+
+        <ui:VisualElement
+            class="maze-fields-row">
+
+            <ui:IntegerField
+                name="width-field"
+                label="Width"
+                class="maze-field maze-field--half"/>
+
+            <ui:IntegerField
+                name="height-field"
+                label="Height"
+                class="maze-field maze-field--half"/>
+
+        </ui:VisualElement>
+
+
+        <ui:FloatField
+            name="cell-size-field"
+            label="Cell Size"
+            class="maze-field"/>
+
+
+        <ui:Button
+            name="apply-button"
+            text="Apply Grid Settings"
+            class="maze-button maze-button--primary"/>
+
+    </ui:VisualElement>
+
+</ui:UXML>

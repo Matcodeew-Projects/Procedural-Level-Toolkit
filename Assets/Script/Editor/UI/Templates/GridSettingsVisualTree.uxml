@@ -1,9 +1,0 @@
-<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/Editor/UI/Styles/GridSettingsStyle.uss?fileID=7433441132597879392&amp;guid=014bc0914e0ea09498128bea99c34799&amp;type=3#GridSettingsStyle"/>
-    <ui:VisualElement name="GridEditorContainer" style="width: auto; aspect-ratio: auto; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0); border-right-width: 3px; border-top-width: 1.5px; border-bottom-width: 1.5px; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0; padding-right: 5px; padding-bottom: 15px; padding-top: 15px;">
-        <ui:Label text="Grid Settings" name="ElementTitle" style="font-size: 18px; -unity-font-style: bold; -unity-text-align: upper-center; color: rgb(255, 255, 255); padding-bottom: 15px;"/>
-        <ui:IntegerField label="Width" value="10" name="WidthIntegerField" class="UserField" style="margin-right: -35px;"/>
-        <ui:IntegerField label="Height" value="10" name="HeightIntegerField" class="UserField" style="margin-right: -35px;"/>
-        <ui:Button text="Create Grid" name="CreateGridButton" class="button" style="margin-top: 15px; margin-right: 20px; margin-bottom: 0; margin-left: 15px; padding-top: 4px; padding-bottom: 4px; padding-right: 30px; padding-left: 30px;"/>
-    </ui:VisualElement>
-</ui:UXML>

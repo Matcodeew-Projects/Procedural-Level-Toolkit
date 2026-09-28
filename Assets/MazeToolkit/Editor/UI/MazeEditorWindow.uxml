@@ -1,0 +1,41 @@
+<ui:UXML
+    xmlns:ui="UnityEngine.UIElements">
+
+    <ui:VisualElement
+        name="maze-editor-root"
+        class="maze-editor">
+
+
+        <ui:VisualElement
+            name="main-layout"
+            class="maze-editor__layout">
+
+
+            <ui:ScrollView
+                name="sidebar"
+                class="maze-editor__sidebar">
+
+
+                <ui:VisualElement
+                    name="grid-settings-host"/>
+
+                <ui:VisualElement
+                    name="tools-host"/>
+
+                <ui:VisualElement
+                    name="brush-host"/>
+
+
+            </ui:ScrollView>
+
+
+            <ui:VisualElement
+                name="grid-preview-host"
+                class="maze-editor__preview-host"/>
+
+
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+
+</ui:UXML>

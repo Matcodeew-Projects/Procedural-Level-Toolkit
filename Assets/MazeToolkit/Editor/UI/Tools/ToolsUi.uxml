@@ -1,0 +1,102 @@
+<ui:UXML
+    xmlns:ui="UnityEngine.UIElements">
+
+    <ui:VisualElement
+        class="maze-panel">
+
+        <ui:Label
+            text="Tools"
+            class="maze-panel__title"/>
+
+
+        <ui:VisualElement
+            class="maze-tools">
+
+            <ui:Button
+                name="brush-tool"
+                class="maze-tool">
+
+                <ui:VisualElement
+                    class="maze-icon-label">
+
+                    <ui:Image
+                        name="brush-tool-icon"
+                        class="maze-tool__icon"/>
+
+                    <ui:Label
+                        text="Brush"
+                        class="maze-tool__label"/>
+
+                </ui:VisualElement>
+
+            </ui:Button>
+
+
+            <ui:Button
+                name="eraser-tool"
+                class="maze-tool">
+
+                <ui:VisualElement
+                    class="maze-icon-label">
+
+                    <ui:Image
+                        name="eraser-tool-icon"
+                        class="maze-tool__icon"/>
+
+                    <ui:Label
+                        text="Erase"
+                        class="maze-tool__label"/>
+
+                </ui:VisualElement>
+
+            </ui:Button>
+
+
+            <ui:Button
+                name="fill-tool"
+                class="maze-tool">
+
+                <ui:VisualElement
+                    class="maze-icon-label">
+
+                    <ui:Image
+                        name="fill-tool-icon"
+                        class="maze-tool__icon"/>
+
+                    <ui:Label
+                        text="Fill"
+                        class="maze-tool__label"/>
+
+                </ui:VisualElement>
+
+            </ui:Button>
+
+        </ui:VisualElement>
+
+
+        <ui:VisualElement
+            class="maze-separator"/>
+
+
+        <ui:Button
+            name="clear-button"
+            class="maze-button maze-button--danger">
+
+            <ui:VisualElement
+                class="maze-icon-label">
+
+                <ui:Image
+                    name="clear-tool-icon"
+                    class="maze-tool__icon"/>
+
+                <ui:Label
+                    text="Clear Grid"
+                    class="maze-tool__label"/>
+
+            </ui:VisualElement>
+
+        </ui:Button>
+
+    </ui:VisualElement>
+
+</ui:UXML>

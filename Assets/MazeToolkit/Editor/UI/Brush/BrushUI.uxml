@@ -1,0 +1,74 @@
+<ui:UXML
+    xmlns:ui="UnityEngine.UIElements">
+
+    <ui:VisualElement
+        class="maze-panel">
+
+        <ui:Label
+            text="Brush"
+            class="maze-panel__title"/>
+
+
+        <!-- ======================== -->
+        <!-- Cell Type                -->
+        <!-- ======================== -->
+
+        <ui:VisualElement
+            class="brush-setting">
+
+            <ui:Image
+                name="brush-type-icon"
+                class="brush-setting__icon"/>
+
+            <ui:DropdownField
+                name="cell-type-field"
+                label="Cell Type"
+                class="brush-setting__control"/>
+
+        </ui:VisualElement>
+
+
+        <!-- ======================== -->
+        <!-- Brush Size               -->
+        <!-- ======================== -->
+
+        <ui:VisualElement
+            class="brush-setting">
+
+            <ui:Image
+                name="brush-size-icon"
+                class="brush-setting__icon"/>
+
+            <ui:SliderInt
+                name="brush-size-field"
+                label="Brush Size"
+                low-value="1"
+                high-value="16"
+                show-input-field="true"
+                class="brush-setting__control"/>
+
+        </ui:VisualElement>
+
+
+        <!-- ======================== -->
+        <!-- Drag                     -->
+        <!-- ======================== -->
+
+        <ui:VisualElement
+            class="brush-setting">
+
+            <ui:Image
+                name="brush-drag-icon"
+                class="brush-setting__icon"/>
+
+            <ui:Toggle
+                name="paint-on-drag-toggle"
+                label="Paint while dragging"
+                value="true"
+                class="brush-setting__control"/>
+
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+
+</ui:UXML>

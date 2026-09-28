@@ -1,0 +1,426 @@
+.maze-editor {
+    flex-grow: 1;
+
+    min-width: 0;
+    min-height: 0;
+
+    padding: 8px;
+}
+
+
+.maze-editor__layout {
+    flex-grow: 1;
+
+    flex-direction: row;
+
+    min-width: 0;
+    min-height: 0;
+}
+
+
+/* ========================================= */
+/* Sidebar                                   */
+/* ========================================= */
+
+.maze-editor__sidebar {
+    width: 290px;
+
+    min-width: 250px;
+    max-width: 360px;
+
+    flex-shrink: 0;
+
+    margin-right: 8px;
+}
+
+
+/* ========================================= */
+/* Preview host                              */
+/* ========================================= */
+
+.maze-editor__preview-host {
+    flex-grow: 1;
+
+    min-width: 0;
+    min-height: 0;
+}
+
+
+/* ========================================= */
+/* Panels                                    */
+/* ========================================= */
+
+.maze-panel {
+    margin-bottom: 8px;
+
+    padding: 10px;
+
+    background-color:
+        rgba(128, 128, 128, 0.07);
+
+    border-width: 1px;
+
+    border-color:
+        rgba(128, 128, 128, 0.22);
+
+    border-radius: 5px;
+}
+
+
+.maze-panel__title {
+    margin-bottom: 10px;
+
+    font-size: 12px;
+
+    -unity-font-style: bold;
+}
+
+
+/* ========================================= */
+/* Fields                                    */
+/* ========================================= */
+
+.maze-fields-row {
+    flex-direction: row;
+
+    flex-wrap: wrap;
+
+    margin-bottom: 5px;
+}
+
+
+.maze-field {
+    flex-grow: 1;
+
+    min-width: 0;
+
+    margin-bottom: 5px;
+}
+
+
+.maze-field--half {
+    min-width: 110px;
+
+    margin-right: 5px;
+}
+
+
+.maze-toggle {
+    margin-top: 5px;
+}
+
+
+/* ========================================= */
+/* Buttons                                   */
+/* ========================================= */
+
+.maze-button {
+    min-height: 27px;
+}
+
+
+.maze-button--primary {
+    margin-top: 4px;
+
+    min-height: 30px;
+
+    -unity-font-style: bold;
+}
+
+
+.maze-button--danger {
+    margin-top: 5px;
+}
+
+
+/* ========================================= */
+/* Tools                                     */
+/* ========================================= */
+
+.maze-tools {
+    flex-direction: row;
+
+    flex-wrap: wrap;
+}
+
+
+.maze-tool {
+    flex-grow: 1;
+
+    min-width: 68px;
+
+    min-height: 30px;
+
+    margin-right: 4px;
+    margin-bottom: 4px;
+}
+
+
+.maze-tool--selected {
+    background-color:
+        rgba(70, 120, 210, 0.48);
+
+    -unity-font-style: bold;
+}
+
+
+.maze-separator {
+    height: 1px;
+
+    margin-top: 5px;
+    margin-bottom: 5px;
+
+    background-color:
+        rgba(128, 128, 128, 0.22);
+}
+
+
+/* ========================================= */
+/* Grid Preview                              */
+/* ========================================= */
+
+.grid-preview {
+    flex-grow: 1;
+
+    min-width: 0;
+    min-height: 0;
+
+    overflow: hidden;
+
+    border-width: 1px;
+
+    border-color:
+        rgba(128, 128, 128, 0.28);
+
+    border-radius: 5px;
+}
+
+
+.grid-preview__header {
+    min-height: 44px;
+
+    flex-direction: row;
+
+    flex-shrink: 0;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding-left: 10px;
+    padding-right: 8px;
+
+    border-bottom-width: 1px;
+
+    border-bottom-color:
+        rgba(128, 128, 128, 0.22);
+
+    background-color:
+        rgba(128, 128, 128, 0.06);
+}
+
+
+.grid-preview__header-info {
+    flex-grow: 1;
+
+    min-width: 0;
+}
+
+
+.grid-preview__title {
+    font-size: 12px;
+
+    -unity-font-style: bold;
+}
+
+
+.grid-preview__subtitle {
+    margin-top: 2px;
+
+    font-size: 10px;
+
+    opacity: 0.65;
+}
+
+
+.grid-preview__controls {
+    flex-direction: row;
+
+    flex-shrink: 0;
+
+    align-items: center;
+}
+
+
+.grid-preview__button {
+    min-width: 44px;
+
+    min-height: 24px;
+
+    margin-left: 4px;
+}
+
+
+.grid-preview__zoom {
+    min-width: 45px;
+
+    margin-left: 6px;
+
+    -unity-text-align: middle-center;
+}
+
+
+.grid-preview__viewport {
+    flex-grow: 1;
+
+    min-width: 0;
+    min-height: 0;
+
+    background-color:
+        rgba(0, 0, 0, 0.10);
+}
+
+
+.grid-preview__canvas {
+    flex-shrink: 0;
+
+    margin: 16px;
+}
+
+
+/* ========================================= */
+/* Compact                                   */
+/* ========================================= */
+
+.maze-editor--compact
+.maze-editor__layout {
+    flex-direction: column;
+}
+
+
+.maze-editor--compact
+.maze-editor__sidebar {
+    width: 100%;
+
+    min-width: 0;
+    max-width: none;
+
+    max-height: 280px;
+
+    margin-right: 0;
+    margin-bottom: 8px;
+}
+
+
+.maze-editor--compact
+.maze-editor__preview-host {
+    min-height: 320px;
+}
+
+/* ========================================= */
+/* Icon + Label                              */
+/* ========================================= */
+
+.maze-icon-label {
+    flex-grow: 1;
+
+    flex-direction: row;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+.maze-tool__icon {
+    width: 18px;
+    height: 18px;
+
+    flex-shrink: 0;
+
+    margin-right: 7px;
+
+    /*
+     * Petit déplacement volontaire
+     * vers la gauche.
+     */
+    translate: -3px 0;
+}
+
+
+.maze-tool__label {
+    flex-shrink: 0;
+
+    -unity-text-align: middle-left;
+}
+
+
+/* ========================================= */
+/* Tools                                     */
+/* ========================================= */
+
+.maze-tools {
+    flex-direction: row;
+
+    flex-wrap: wrap;
+}
+
+
+.maze-tool {
+    flex-grow: 1;
+
+    min-width: 82px;
+    min-height: 34px;
+
+    margin-right: 4px;
+    margin-bottom: 4px;
+
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+
+.maze-tool--selected {
+    background-color:
+        rgba(70, 120, 210, 0.48);
+
+    -unity-font-style: bold;
+}
+
+
+/* ========================================= */
+/* Brush settings                            */
+/* ========================================= */
+
+.brush-setting {
+    width: 100%;
+
+    flex-direction: row;
+
+    align-items: center;
+
+    margin-bottom: 8px;
+}
+
+
+.brush-setting__icon {
+    width: 20px;
+    height: 20px;
+
+    flex-shrink: 0;
+
+    /*
+     * L'icône est volontairement
+     * un peu plus à gauche.
+     */
+    margin-left: -3px;
+
+    margin-right: 8px;
+}
+
+
+.brush-setting__control {
+    flex-grow: 1;
+
+    min-width: 0;
+}

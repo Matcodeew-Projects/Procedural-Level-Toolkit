@@ -1,0 +1,42 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         editor-extension-mode="True">
+
+    <ui:VisualElement name="inspector-panel" class="panel panel--inspector">
+        <ui:VisualElement class="panel__header">
+            <ui:Label text="Inspector" class="panel__title" />
+            <ui:Label name="selection-kind-label" text="Nothing selected" class="panel__meta" />
+        </ui:VisualElement>
+
+        <ui:ScrollView name="inspector-scroll" class="panel__body inspector-scroll">
+            <ui:VisualElement name="empty-selection-inspector" class="inspector-state">
+                <ui:Label text="Select a cell, group or socket to inspect it."
+                          class="text-muted text-centered inspector-empty-text" />
+            </ui:VisualElement>
+
+            <ui:VisualElement name="cell-inspector" class="inspector-state hidden">
+                <ui:Label text="Cell" class="section-title" />
+                <ui:Label name="cell-position-label" text="Position: —, —" class="readout" />
+                <ui:DropdownField name="cell-type-field" label="Type" class="field" />
+                <ui:Toggle name="cell-enabled-toggle" label="Enabled" value="true" class="field" />
+            </ui:VisualElement>
+
+            <ui:VisualElement name="group-inspector" class="inspector-state hidden">
+                <ui:Label text="Cell Group" class="section-title" />
+                <ui:TextField name="group-id-field" label="Id" class="field" />
+                <ui:TextField name="group-label-field" label="Label" class="field" />
+                <ui:Label name="group-cell-count-label" text="Cells: 0" class="readout" />
+                <ui:Button name="clear-group-button" text="Clear Group" class="button button--compact" />
+            </ui:VisualElement>
+
+            <ui:VisualElement name="socket-inspector" class="inspector-state hidden">
+                <ui:Label text="Room Socket" class="section-title" />
+                <ui:TextField name="socket-id-field" label="Id" class="field" />
+                <ui:DropdownField name="socket-direction-field" label="Direction" class="field" />
+                <ui:DropdownField name="socket-type-field" label="Socket Type" class="field" />
+                <ui:Toggle name="socket-required-toggle" label="Required" class="field" />
+                <ui:Button name="remove-socket-button" text="Remove Socket" class="button button--compact button--danger" />
+            </ui:VisualElement>
+        </ui:ScrollView>
+    </ui:VisualElement>
+</ui:UXML>

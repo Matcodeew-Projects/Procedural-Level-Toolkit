@@ -1,0 +1,25 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         editor-extension-mode="True">
+
+    <ui:VisualElement name="preview-panel" class="panel panel--preview">
+        <ui:VisualElement class="panel__header">
+            <ui:Label text="3D Preview" class="panel__title" />
+            <ui:VisualElement class="spacer" />
+            <ui:Toggle name="live-preview-toggle" text="Live" value="true" class="preview-live-toggle" />
+        </ui:VisualElement>
+
+        <ui:VisualElement class="panel__body panel__body--grow">
+            <ui:VisualElement name="preview-3d-viewport" class="preview-viewport">
+                <ui:Label name="preview-placeholder-label"
+                          text="3D PREVIEW"
+                          class="preview-placeholder" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="preview-actions">
+                <ui:Button name="refresh-preview-button" text="Refresh" class="button button--compact preview-actions__button" />
+                <ui:Button name="frame-preview-button" text="Frame" class="button button--compact preview-actions__button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

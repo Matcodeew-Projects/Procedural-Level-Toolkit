@@ -1,0 +1,100 @@
+.room-editor {
+    color: rgb(214, 214, 214);
+    font-size: 12px;
+}
+
+.spacer {
+    flex-grow: 1;
+}
+
+.hidden {
+    display: none;
+}
+
+.text-muted {
+    color: rgb(145, 145, 145);
+}
+
+.text-small {
+    font-size: 10px;
+}
+
+.text-centered {
+    -unity-text-align: middle-center;
+}
+
+.eyebrow {
+    color: rgb(120, 120, 120);
+    font-size: 9px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+}
+
+.section-title {
+    margin-bottom: 6px;
+    color: rgb(205, 205, 205);
+    -unity-font-style: bold;
+}
+
+.section-divider {
+    height: 1px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    background-color: rgb(59, 59, 59);
+}
+
+.button {
+    height: 24px;
+    margin-left: 0;
+    margin-right: 4px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.button--compact {
+    min-width: 54px;
+}
+
+.button--square {
+    width: 26px;
+    min-width: 26px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.button--toolbar {
+    height: 24px;
+    min-width: 54px;
+}
+
+.button--primary {
+    -unity-font-style: bold;
+}
+
+.button--danger {
+    color: rgb(238, 176, 176);
+}
+
+.field {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 2px;
+    margin-bottom: 4px;
+}
+
+.readout {
+    min-height: 22px;
+    margin-bottom: 4px;
+    padding-left: 6px;
+    padding-right: 6px;
+    background-color: rgb(42, 42, 42);
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-top-color: rgb(63, 63, 63);
+    border-right-color: rgb(63, 63, 63);
+    border-bottom-color: rgb(63, 63, 63);
+    border-left-color: rgb(63, 63, 63);
+    -unity-text-align: middle-left;
+}

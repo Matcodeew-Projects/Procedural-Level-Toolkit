@@ -1,0 +1,28 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         editor-extension-mode="True">
+
+    <ui:VisualElement name="room-toolbar" class="toolbar">
+        <ui:VisualElement class="toolbar__identity">
+            <ui:Label text="ROOM EDITOR" class="toolbar__title" />
+            <ui:Label name="room-name-label" text="Untitled Room" class="toolbar__room-name" />
+            <ui:Label name="dirty-indicator" text="●" class="toolbar__dirty hidden" />
+        </ui:VisualElement>
+
+        <ui:VisualElement class="toolbar__separator" />
+
+        <ui:Button name="new-room-button" text="New" class="button button--toolbar" />
+        <ui:Button name="load-room-button" text="Load" class="button button--toolbar" />
+        <ui:Button name="save-room-button" text="Save" class="button button--toolbar button--primary" />
+
+        <ui:VisualElement class="toolbar__separator" />
+
+        <ui:Button name="undo-button" text="Undo" class="button button--toolbar" />
+        <ui:Button name="redo-button" text="Redo" class="button button--toolbar" />
+
+        <ui:VisualElement class="spacer" />
+
+        <ui:Label name="validation-state-label" text="Not validated" class="toolbar__validation text-muted" />
+        <ui:Button name="validate-room-button" text="Validate" class="button button--toolbar" />
+    </ui:VisualElement>
+</ui:UXML>

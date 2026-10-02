@@ -6,47 +6,38 @@ using UnityEngine;
 public sealed class RoomEditorController
     : IDisposable
 {
-    private readonly RoomEditorContext
-        context;
+    private const float InactiveLayerOpacity = 0.20f;
 
+    private readonly RoomEditorContext context;
+    private readonly RoomEditorUI ui;
 
-    private readonly RoomEditorUI
-        ui;
-
-
-    private RoomEditorInputHandler
-        inputHandler;
-
+    private RoomEditorInputHandler inputHandler;
 
     private bool strokeActive;
-
-
     private bool strokeUndoRecorded;
-
-
-    private int strokeUndoGroup =
-        -1;
-
+    private int strokeUndoGroup = -1;
 
     public RoomEditorController(
         RoomEditorContext context,
         RoomEditorUI ui)
     {
         this.context =
-            context;
-
+            context
+            ?? throw new ArgumentNullException(
+                nameof(context)
+            );
 
         this.ui =
-            ui;
-
+            ui
+            ?? throw new ArgumentNullException(
+                nameof(ui)
+            );
 
         ui.GridCanvas.CellColorProvider =
             GetCellColor;
 
-
         ui.GridCanvas.SocketProvider =
             GetSocketAt;
-
 
         ui.Inspector.SetSocketDirections(
             Enum.GetNames(
@@ -54,262 +45,204 @@ public sealed class RoomEditorController
             )
         );
 
-
         ui.Inspector.SetSocketRoles(
             Enum.GetNames(
                 typeof(SocketRole)
             )
         );
 
-
         BindToolbar();
-
         BindLayers();
-
         BindInspector();
-
 
         context.RoomChanged +=
             RefreshAll;
 
-
         context.ActiveLayerChanged +=
             RefreshAfterLayerChanged;
-
 
         context.SelectionChanged +=
             RefreshInspector;
 
-
         Undo.undoRedoPerformed +=
             OnUndoRedoPerformed;
 
-
         RefreshAll();
     }
-
-
-    // =========================================================
-    // Input
-    // =========================================================
 
     public void BindInput(
         RoomEditorInputHandler input)
     {
         UnbindInput();
 
-
         inputHandler =
-            input;
-
+            input
+            ?? throw new ArgumentNullException(
+                nameof(input)
+            );
 
         inputHandler.StrokeStarted +=
             OnStrokeStarted;
 
-
         inputHandler.StrokeEnded +=
             OnStrokeEnded;
-
 
         inputHandler.SelectionRequested +=
             OnSelectionRequested;
 
-
         inputHandler.PaintRequested +=
             OnPaintRequested;
-
 
         inputHandler.EraseRequested +=
             OnEraseRequested;
 
-
         inputHandler.FillRequested +=
             OnFillRequested;
-
 
         inputHandler.GroupRequested +=
             OnGroupRequested;
 
-
         inputHandler.SocketRequested +=
             OnSocketRequested;
     }
-
-
-    // =========================================================
-    // Bind
-    // =========================================================
 
     private void BindToolbar()
     {
         ui.Toolbar.NewRequested +=
             CreateNewRoom;
 
-
         ui.Toolbar.LoadRequested +=
             LoadRoom;
-
 
         ui.Toolbar.SaveRequested +=
             SaveRoom;
 
-
         ui.Toolbar.UndoRequested +=
             PerformUndo;
-
 
         ui.Toolbar.RedoRequested +=
             PerformRedo;
 
-
         ui.Toolbar.ValidateRequested +=
             ValidateRoom;
     }
-
 
     private void BindLayers()
     {
         ui.Layers.AddRequested +=
             AddLayer;
 
-
         ui.Layers.DuplicateRequested +=
             DuplicateLayer;
-
 
         ui.Layers.DeleteRequested +=
             DeleteLayer;
 
-
         ui.Layers.MoveUpRequested +=
             MoveLayerUp;
-
 
         ui.Layers.MoveDownRequested +=
             MoveLayerDown;
 
-
         ui.Layers.RenameRequested +=
             RenameLayer;
-
 
         ui.Layers.VisibilityChanged +=
             ChangeLayerVisibility;
 
-
         ui.Layers.LockChanged +=
             ChangeLayerLock;
     }
-
 
     private void BindInspector()
     {
         ui.Inspector.RoomResizeRequested +=
             ResizeRoom;
 
-
         ui.Inspector.CellTypeChanged +=
             ChangeSelectedCellType;
-
 
         ui.Inspector.CellEnabledChanged +=
             ChangeSelectedCellEnabled;
 
-
         ui.Inspector.GroupIdChanged +=
             ChangeGroupId;
-
 
         ui.Inspector.GroupLabelChanged +=
             ChangeGroupLabel;
 
-
         ui.Inspector.ClearGroupRequested +=
             DeleteSelectedGroup;
-
 
         ui.Inspector.SocketIdChanged +=
             ChangeSocketId;
 
-
         ui.Inspector.SocketDirectionChanged +=
             ChangeSocketDirection;
-
 
         ui.Inspector.SocketRoleChanged +=
             ChangeSocketRole;
 
-
         ui.Inspector.SocketTypeChanged +=
             ChangeSocketType;
 
-
         ui.Inspector.SocketWidthChanged +=
             ChangeSocketWidth;
-
 
         ui.Inspector.RemoveSocketRequested +=
             DeleteSelectedSocket;
     }
 
-
-    // =========================================================
-    // Room
-    // =========================================================
-
     private void CreateNewRoom()
     {
-        string path =
-            EditorUtility
-                .SaveFilePanelInProject(
-                    "Create Room Definition",
-                    "NewRoom",
-                    "asset",
-                    "Choose where to save the RoomDefinition."
-                );
-
-
-        if (
-            string.IsNullOrWhiteSpace(
-                path
-            ))
-        {
+        if (!ConfirmDiscardUnsavedChanges())
             return;
-        }
 
+        string path =
+            EditorUtility.SaveFilePanelInProject(
+                "Create Room Definition",
+                "NewRoom",
+                "asset",
+                "Choose where to save the RoomDefinition."
+            );
+
+        if (string.IsNullOrWhiteSpace(path))
+            return;
 
         RoomDefinition room =
-            ScriptableObject
-                .CreateInstance<RoomDefinition>();
-
+            ScriptableObject.CreateInstance<
+                RoomDefinition
+            >();
 
         room.Initialize(
             20,
             20
         );
 
-
         AssetDatabase.CreateAsset(
             room,
             path
         );
 
-
         AssetDatabase.SaveAssets();
-
 
         SetRoom(
             room
         );
 
-
         Selection.activeObject =
             room;
-    }
 
+        ui.SetStatus(
+            $"Created {room.name}"
+        );
+    }
 
     private void LoadRoom()
     {
+        if (!ConfirmDiscardUnsavedChanges())
+            return;
+
         string absolutePath =
             EditorUtility.OpenFilePanel(
                 "Load Room Definition",
@@ -317,248 +250,349 @@ public sealed class RoomEditorController
                 "asset"
             );
 
-
-        if (
-            string.IsNullOrWhiteSpace(
-                absolutePath
-            ))
-        {
+        if (string.IsNullOrWhiteSpace(absolutePath))
             return;
-        }
-
 
         string assetPath =
             FileUtil.GetProjectRelativePath(
                 absolutePath
             );
 
-
-        RoomDefinition room =
-            AssetDatabase
-                .LoadAssetAtPath<RoomDefinition>(
-                    assetPath
-                );
-
-
-        if (room == null)
+        if (string.IsNullOrWhiteSpace(assetPath))
             return;
 
+        RoomDefinition room =
+            AssetDatabase.LoadAssetAtPath<
+                RoomDefinition
+            >(
+                assetPath
+            );
+
+        if (room == null)
+        {
+            EditorUtility.DisplayDialog(
+                "Invalid Room",
+                "The selected asset is not a RoomDefinition.",
+                "OK"
+            );
+
+            return;
+        }
 
         room.EnsureIntegrity();
-
 
         SetRoom(
             room
         );
-    }
 
+        Selection.activeObject =
+            room;
+
+        ui.SetStatus(
+            $"Loaded {room.name}"
+        );
+    }
 
     private void SaveRoom()
     {
-        if (
-            context.CurrentRoom ==
-            null)
-        {
-            return;
-        }
+        RoomDefinition room =
+            context.CurrentRoom;
 
+        if (room == null)
+            return;
 
         EditorUtility.SetDirty(
-            context.CurrentRoom
+            room
         );
 
-
         AssetDatabase.SaveAssets();
-
 
         ui.Toolbar.SetDirty(
             false
         );
-    }
 
+        ui.SetStatus(
+            $"Saved {room.name}"
+        );
+    }
 
     private void PerformUndo()
     {
         Undo.PerformUndo();
     }
 
-
     private void PerformRedo()
     {
         Undo.PerformRedo();
     }
 
-
     private void ValidateRoom()
     {
-        ui.Toolbar.SetValidationState(
-            context.CurrentRoom !=
-            null
-                ? "Valid"
-                : "No room"
+        RoomDefinition room =
+            context.CurrentRoom;
+
+        if (room == null)
+        {
+            ui.Toolbar.SetValidationState(
+                "No room"
+            );
+
+            ui.SetStatus(
+                "No Room loaded."
+            );
+
+            return;
+        }
+
+        RoomValidationResult result =
+            RoomValidator.Validate(
+                room,
+                ui.Preview.GenerationSettings,
+                false
+            );
+
+        if (result.HasErrors)
+        {
+            ui.Toolbar.SetValidationState(
+                $"{result.ErrorCount} error(s)"
+            );
+        }
+        else if (result.HasWarnings)
+        {
+            ui.Toolbar.SetValidationState(
+                $"{result.WarningCount} warning(s)"
+            );
+        }
+        else
+        {
+            ui.Toolbar.SetValidationState(
+                "Valid"
+            );
+        }
+
+        ui.SetStatus(
+            result.GetSummary()
         );
+
+        foreach (RoomValidationIssue issue in result.Issues)
+        {
+            switch (issue.Severity)
+            {
+                case RoomValidationSeverity.Error:
+                    Debug.LogError(
+                        $"[RoomValidator] {issue.Message}",
+                        room
+                    );
+                    break;
+
+                case RoomValidationSeverity.Warning:
+                    Debug.LogWarning(
+                        $"[RoomValidator] {issue.Message}",
+                        room
+                    );
+                    break;
+
+                default:
+                    Debug.Log(
+                        $"[RoomValidator] {issue.Message}",
+                        room
+                    );
+                    break;
+            }
+        }
     }
-
-
-    // =========================================================
-    // Layer
-    // =========================================================
 
     private void AddLayer()
     {
         RoomDefinition room =
             context.CurrentRoom;
 
-
         if (room == null)
             return;
-
 
         RecordImmediateUndo(
             "Add Layer"
         );
-
 
         RoomLayerData layer =
             room.AddLayer(
                 $"Layer {room.Layers.Count + 1}"
             );
 
-
         context.SetActiveLayer(
             layer
         );
 
-
         MarkRoomDirty();
-
         RefreshAll();
-    }
 
+        ui.SetStatus(
+            $"Created {layer.DisplayName}"
+        );
+    }
 
     private void DuplicateLayer()
     {
         RoomDefinition room =
             context.CurrentRoom;
 
+        RoomLayerData layer =
+            context.ActiveLayer;
 
         if (
             room == null ||
-            context.ActiveLayer ==
-            null)
+            layer == null)
         {
             return;
         }
-
 
         RecordImmediateUndo(
             "Duplicate Layer"
         );
 
-
         RoomLayerData clone =
             room.DuplicateLayer(
-                context.ActiveLayer
+                layer
             );
 
+        if (clone == null)
+            return;
 
         context.SetActiveLayer(
             clone
         );
 
-
         MarkRoomDirty();
-
         RefreshAll();
-    }
 
+        ui.SetStatus(
+            $"Duplicated {layer.DisplayName}"
+        );
+    }
 
     private void DeleteLayer()
     {
         RoomDefinition room =
             context.CurrentRoom;
 
-
         RoomLayerData layer =
             context.ActiveLayer;
 
-
         if (
             room == null ||
-            layer == null ||
-            room.Layers.Count <=
-            1)
+            layer == null)
         {
             return;
         }
 
+        if (room.Layers.Count <= 1)
+        {
+            ui.SetStatus(
+                "A Room must contain at least one Layer."
+            );
+
+            return;
+        }
+
+        foreach (CellGroupData group in room.Groups)
+        {
+            if (
+                group != null &&
+                group.LayerId == layer.Id)
+            {
+                ui.SetStatus(
+                    $"Cannot delete '{layer.DisplayName}' while CellGroups still reference it."
+                );
+
+                return;
+            }
+        }
+
+        bool confirm =
+            EditorUtility.DisplayDialog(
+                "Delete Layer",
+                $"Delete '{layer.DisplayName}'?",
+                "Delete",
+                "Cancel"
+            );
+
+        if (!confirm)
+            return;
+
+        int index =
+            IndexOfLayer(
+                room,
+                layer
+            );
 
         RecordImmediateUndo(
             "Delete Layer"
         );
 
+        if (!room.RemoveLayer(layer))
+            return;
 
-        room.RemoveLayer(
-            layer
-        );
-
+        index =
+            Mathf.Clamp(
+                index,
+                0,
+                room.Layers.Count - 1
+            );
 
         context.SetActiveLayer(
-            room.Layers[0]
+            room.Layers[index]
         );
 
-
         MarkRoomDirty();
-
         RefreshAll();
-    }
 
+        ui.SetStatus(
+            "Layer deleted"
+        );
+    }
 
     private void MoveLayerUp()
     {
-        MoveLayer(
-            -1
-        );
+        MoveLayer(-1);
     }
-
 
     private void MoveLayerDown()
     {
-        MoveLayer(
-            1
-        );
+        MoveLayer(1);
     }
-
 
     private void MoveLayer(
         int direction)
     {
+        RoomDefinition room =
+            context.CurrentRoom;
+
+        RoomLayerData layer =
+            context.ActiveLayer;
+
         if (
-            context.CurrentRoom ==
-            null ||
-            context.ActiveLayer ==
-            null)
+            room == null ||
+            layer == null)
         {
             return;
         }
-
 
         RecordImmediateUndo(
             "Move Layer"
         );
 
-
-        context.CurrentRoom.MoveLayer(
-            context.ActiveLayer,
-            direction
-        );
-
+        if (
+            !room.MoveLayer(
+                layer,
+                direction
+            ))
+        {
+            return;
+        }
 
         MarkRoomDirty();
-
         RefreshAll();
     }
-
 
     private void RenameLayer(
         RoomLayerData layer,
@@ -566,39 +600,32 @@ public sealed class RoomEditorController
     {
         if (
             layer == null ||
-            string.IsNullOrWhiteSpace(
-                newName
-            ))
-        {
-            RefreshAll();
-
-            return;
-        }
-
-
-        if (
-            layer.DisplayName ==
-            newName)
+            string.IsNullOrWhiteSpace(newName))
         {
             return;
         }
 
+        newName =
+            newName.Trim();
+
+        if (layer.DisplayName == newName)
+            return;
 
         RecordImmediateUndo(
             "Rename Layer"
         );
 
-
         layer.SetDisplayName(
             newName
         );
 
-
         MarkRoomDirty();
-
         RefreshAll();
-    }
 
+        ui.SetStatus(
+            $"Layer renamed to {newName}"
+        );
+    }
 
     private void ChangeLayerVisibility(
         RoomLayerData layer,
@@ -607,22 +634,33 @@ public sealed class RoomEditorController
         if (layer == null)
             return;
 
+        if (layer.Visible == visible)
+            return;
 
         RecordImmediateUndo(
             "Change Layer Visibility"
         );
 
-
         layer.SetVisible(
             visible
         );
 
+        MarkRoomDirty(
+            false
+        );
 
-        MarkRoomDirty();
+        ui.Layers.SetLayers(
+            context.CurrentRoom.Layers
+        );
 
         ui.GridCanvas.Refresh();
-    }
 
+        ui.SetStatus(
+            visible
+                ? $"{layer.DisplayName} is visible"
+                : $"{layer.DisplayName} is hidden"
+        );
+    }
 
     private void ChangeLayerLock(
         RoomLayerData layer,
@@ -631,64 +669,62 @@ public sealed class RoomEditorController
         if (layer == null)
             return;
 
+        if (layer.Locked == locked)
+            return;
 
         RecordImmediateUndo(
             "Change Layer Lock"
         );
 
-
         layer.SetLocked(
             locked
         );
 
+        MarkRoomDirty(
+            false
+        );
 
-        MarkRoomDirty();
+        ui.Layers.SetLayers(
+            context.CurrentRoom.Layers
+        );
 
-        RefreshAll();
+        ui.SetStatus(
+            locked
+                ? $"{layer.DisplayName} is locked"
+                : $"{layer.DisplayName} is unlocked"
+        );
     }
-
-
-    // =========================================================
-    // Select
-    // =========================================================
 
     private void OnSelectionRequested(
         IReadOnlyList<Vector2Int> cells)
     {
+        if (context.CurrentRoom == null)
+            return;
+
         if (
             cells == null ||
-            cells.Count ==
-            0)
+            cells.Count == 0)
         {
             context.ClearSelection();
-
             return;
         }
 
-
-        if (
-            cells.Count >
-            1)
+        if (cells.Count > 1)
         {
             context.SetSelectedCells(
                 cells
             );
 
-
             return;
         }
 
-
-        Vector2Int cell =
+        Vector2Int position =
             cells[0];
 
-
         RoomSocketData socket =
-            context.CurrentRoom
-                ?.GetSocketAt(
-                    cell
-                );
-
+            context.CurrentRoom.GetSocketAt(
+                position
+            );
 
         if (socket != null)
         {
@@ -696,17 +732,19 @@ public sealed class RoomEditorController
                 socket
             );
 
-
             return;
         }
 
-
         CellGroupData group =
-            context.CurrentRoom
-                ?.GetGroupAtCell(
-                    cell
-                );
-
+            GetGroupAtCellOnLayer(
+                context.CurrentRoom,
+                position,
+                context.ActiveLayer?.Id
+            )
+            ??
+            context.CurrentRoom.GetGroupAtCell(
+                position
+            );
 
         if (group != null)
         {
@@ -714,20 +752,13 @@ public sealed class RoomEditorController
                 group
             );
 
-
             return;
         }
 
-
         context.SetSelectedCell(
-            cell
+            position
         );
     }
-
-
-    // =========================================================
-    // Paint
-    // =========================================================
 
     private void OnPaintRequested(
         IReadOnlyList<Vector2Int> positions,
@@ -740,48 +771,36 @@ public sealed class RoomEditorController
             return;
         }
 
-
         EnsureStrokeUndo(
             "Paint Cells"
         );
 
+        RoomDefinition room =
+            context.CurrentRoom;
 
-        foreach (
-            Vector2Int position
-            in positions)
+        foreach (Vector2Int position in positions)
         {
             CellData cell =
-                context.CurrentRoom
-                    .GetCell(
-                        context.ActiveLayer,
-                        position
-                    );
-
+                room.GetCell(
+                    context.ActiveLayer,
+                    position
+                );
 
             if (cell == null)
                 continue;
 
-
             cell.SetType(
                 type
             );
-
 
             cell.SetEnabled(
                 true
             );
         }
 
-
         MarkRoomDirty();
-
         ui.GridCanvas.Refresh();
     }
-
-
-    // =========================================================
-    // Erase
-    // =========================================================
 
     private void OnEraseRequested(
         IReadOnlyList<Vector2Int> positions)
@@ -789,39 +808,26 @@ public sealed class RoomEditorController
         if (!CanEditActiveLayer())
             return;
 
-
         EnsureStrokeUndo(
             "Erase Cells"
         );
 
-
-        foreach (
-            Vector2Int position
-            in positions)
+        foreach (Vector2Int position in positions)
         {
             CellData cell =
-                context.CurrentRoom
-                    .GetCell(
-                        context.ActiveLayer,
-                        position
-                    );
-
+                context.CurrentRoom.GetCell(
+                    context.ActiveLayer,
+                    position
+                );
 
             cell?.SetType(
                 null
             );
         }
 
-
         MarkRoomDirty();
-
         ui.GridCanvas.Refresh();
     }
-
-
-    // =========================================================
-    // Fill
-    // =========================================================
 
     private void OnFillRequested(
         Vector2Int origin,
@@ -834,14 +840,11 @@ public sealed class RoomEditorController
             return;
         }
 
-
         RoomDefinition room =
             context.CurrentRoom;
 
-
         RoomLayerData layer =
             context.ActiveLayer;
-
 
         CellData originCell =
             room.GetCell(
@@ -849,14 +852,11 @@ public sealed class RoomEditorController
                 origin
             );
 
-
         if (originCell == null)
             return;
 
-
         CellTypeDefinition target =
             originCell.Type;
-
 
         if (
             ReferenceEquals(
@@ -867,48 +867,33 @@ public sealed class RoomEditorController
             return;
         }
 
-
         EnsureStrokeUndo(
             "Fill Cells"
         );
 
-
         Queue<Vector2Int> queue =
             new();
 
-
         HashSet<Vector2Int> visited =
             new();
-
 
         queue.Enqueue(
             origin
         );
 
-
-        while (
-            queue.Count >
-            0)
+        while (queue.Count > 0)
         {
             Vector2Int current =
                 queue.Dequeue();
 
-
-            if (
-                !visited.Add(
-                    current
-                ))
-            {
+            if (!visited.Add(current))
                 continue;
-            }
-
 
             CellData cell =
                 room.GetCell(
                     layer,
                     current
                 );
-
 
             if (
                 cell == null ||
@@ -920,61 +905,26 @@ public sealed class RoomEditorController
                 continue;
             }
 
-
             cell.SetType(
                 replacement
             );
 
-
-            TryEnqueue(
-                current +
-                Vector2Int.up
-            );
-
-
-            TryEnqueue(
-                current +
-                Vector2Int.down
-            );
-
-
-            TryEnqueue(
-                current +
-                Vector2Int.left
-            );
-
-
-            TryEnqueue(
-                current +
-                Vector2Int.right
-            );
+            TryQueue(current + Vector2Int.up);
+            TryQueue(current + Vector2Int.down);
+            TryQueue(current + Vector2Int.left);
+            TryQueue(current + Vector2Int.right);
         }
 
-
-        void TryEnqueue(
+        void TryQueue(
             Vector2Int position)
         {
-            if (
-                context.IsInside(
-                    position
-                ))
-            {
-                queue.Enqueue(
-                    position
-                );
-            }
+            if (context.IsInside(position))
+                queue.Enqueue(position);
         }
 
-
         MarkRoomDirty();
-
         ui.GridCanvas.Refresh();
     }
-
-
-    // =========================================================
-    // Group
-    // =========================================================
 
     private void OnGroupRequested(
         IReadOnlyList<Vector2Int> cells)
@@ -982,88 +932,81 @@ public sealed class RoomEditorController
         RoomDefinition room =
             context.CurrentRoom;
 
+        RoomLayerData activeLayer =
+            context.ActiveLayer;
 
         if (
             room == null ||
+            activeLayer == null ||
             cells == null ||
-            cells.Count ==
-            0)
+            cells.Count == 0)
         {
             return;
         }
 
-
-        if (
-            cells.Count ==
-            1)
+        if (cells.Count == 1)
         {
             CellGroupData existing =
-                room.GetGroupAtCell(
-                    cells[0]
+                GetGroupAtCellOnLayer(
+                    room,
+                    cells[0],
+                    activeLayer.Id
                 );
-
 
             if (existing != null)
             {
                 context.SetSelectedGroup(
                     existing
                 );
-
 
                 return;
             }
         }
 
-
-        foreach (
-            Vector2Int cell
-            in cells)
+        foreach (Vector2Int position in cells)
         {
             CellGroupData existing =
-                room.GetGroupAtCell(
-                    cell
+                GetGroupAtCellOnLayer(
+                    room,
+                    position,
+                    activeLayer.Id
                 );
-
 
             if (existing != null)
             {
                 context.SetSelectedGroup(
                     existing
                 );
-
 
                 ui.SetStatus(
-                    "One or more cells already belong to a group."
+                    "One or more Cells already belong to a Group on this Layer."
                 );
-
 
                 return;
             }
         }
-
 
         EnsureStrokeUndo(
             "Create Cell Group"
         );
 
-
-        CellGroupData group =
+        CellGroupData newGroup =
             room.AddGroup(
                 cells,
                 $"Group {room.Groups.Count + 1}"
             );
 
-
-        context.SetSelectedGroup(
-            group
+        newGroup.SetLayerId(
+            activeLayer.Id
         );
 
+        context.SetSelectedGroup(
+            newGroup
+        );
 
         MarkRoomDirty();
-
         ui.GridCanvas.Refresh();
     }
-
 
     private void ChangeGroupId(
         string value)
@@ -1071,141 +1014,84 @@ public sealed class RoomEditorController
         CellGroupData group =
             context.SelectedGroup;
 
-
         if (
             group == null ||
-            string.IsNullOrWhiteSpace(
-                value
-            ))
+            string.IsNullOrWhiteSpace(value))
         {
             return;
         }
-
-
-        CellGroupData other =
-            context.CurrentRoom
-                .GetGroupById(
-                    value
-                );
-
-
-        if (
-            other != null &&
-            !ReferenceEquals(
-                other,
-                group
-            ))
-        {
-            ui.SetStatus(
-                "Another group already uses this ID."
-            );
-
-
-            RefreshInspector();
-
-            return;
-        }
-
 
         RecordImmediateUndo(
             "Change Group ID"
         );
 
-
         group.SetId(
             value
         );
 
-
         MarkRoomDirty();
-
-        RefreshInspector();
     }
-
 
     private void ChangeGroupLabel(
         string value)
     {
-        if (
-            context.SelectedGroup ==
-            null)
-        {
-            return;
-        }
+        CellGroupData group =
+            context.SelectedGroup;
 
+        if (group == null)
+            return;
 
         RecordImmediateUndo(
             "Rename Group"
         );
 
-
-        context.SelectedGroup
-            .SetLabel(
-                value
-            );
-
+        group.SetLabel(
+            value
+        );
 
         MarkRoomDirty();
-
         RefreshInspector();
     }
-
 
     private void DeleteSelectedGroup()
     {
         CellGroupData group =
             context.SelectedGroup;
 
-
         if (
             group == null ||
-            context.CurrentRoom ==
-            null)
+            context.CurrentRoom == null)
         {
             return;
         }
-
 
         RecordImmediateUndo(
             "Delete Group"
         );
 
-
-        context.CurrentRoom
-            .RemoveGroup(
-                group
-            );
-
+        context.CurrentRoom.RemoveGroup(
+            group
+        );
 
         context.ClearSelection();
 
-
         MarkRoomDirty();
-
         ui.GridCanvas.Refresh();
     }
 
-
-    // =========================================================
-    // Socket
-    // =========================================================
-
     private void OnSocketRequested(
-        Vector2Int cell)
+        Vector2Int position)
     {
         RoomDefinition room =
             context.CurrentRoom;
 
-
         if (room == null)
             return;
 
-
         RoomSocketData socket =
             room.GetSocketAt(
-                cell
+                position
             );
-
 
         if (socket != null)
         {
@@ -1213,94 +1099,48 @@ public sealed class RoomEditorController
                 socket
             );
 
-
             return;
         }
-
 
         EnsureStrokeUndo(
             "Create Room Socket"
         );
 
-
         socket =
             room.AddSocket(
-                cell
+                position
             );
-
 
         context.SetSelectedSocket(
             socket
         );
 
-
         MarkRoomDirty();
-
         ui.GridCanvas.Refresh();
     }
-
 
     private void ChangeSocketId(
         string value)
     {
-        RoomSocketData socket =
-            context.SelectedSocket;
-
-
-        if (
-            socket == null ||
-            string.IsNullOrWhiteSpace(
-                value
-            ))
-        {
+        if (context.SelectedSocket == null)
             return;
-        }
-
-
-        RoomSocketData other =
-            context.CurrentRoom
-                .GetSocketById(
-                    value
-                );
-
-
-        if (
-            other != null &&
-            !ReferenceEquals(
-                other,
-                socket
-            ))
-        {
-            RefreshInspector();
-
-            return;
-        }
-
 
         RecordImmediateUndo(
             "Change Socket ID"
         );
 
-
-        socket.SetId(
+        context.SelectedSocket.SetId(
             value
         );
-
 
         MarkRoomDirty();
     }
 
-
     private void ChangeSocketDirection(
         string value)
     {
-        if (
-            context.SelectedSocket ==
-            null)
-        {
+        if (context.SelectedSocket == null)
             return;
-        }
-
 
         if (
             !Enum.TryParse(
@@ -1311,32 +1151,23 @@ public sealed class RoomEditorController
             return;
         }
 
-
         RecordImmediateUndo(
             "Change Socket Direction"
         );
 
-
-        context.SelectedSocket
-            .SetDirection(
-                direction
-            );
-
+        context.SelectedSocket.SetDirection(
+            direction
+        );
 
         MarkRoomDirty();
+        ui.GridCanvas.Refresh();
     }
-
 
     private void ChangeSocketRole(
         string value)
     {
-        if (
-            context.SelectedSocket ==
-            null)
-        {
+        if (context.SelectedSocket == null)
             return;
-        }
-
 
         if (
             !Enum.TryParse(
@@ -1347,112 +1178,76 @@ public sealed class RoomEditorController
             return;
         }
 
-
         RecordImmediateUndo(
             "Change Socket Role"
         );
 
-
-        context.SelectedSocket
-            .SetRole(
-                role
-            );
-
+        context.SelectedSocket.SetRole(
+            role
+        );
 
         MarkRoomDirty();
     }
 
-
     private void ChangeSocketType(
         string value)
     {
-        if (
-            context.SelectedSocket ==
-            null)
-        {
+        if (context.SelectedSocket == null)
             return;
-        }
-
 
         RecordImmediateUndo(
             "Change Socket Type"
         );
 
-
-        context.SelectedSocket
-            .SetType(
-                value
-            );
-
+        context.SelectedSocket.SetType(
+            value
+        );
 
         MarkRoomDirty();
     }
 
-
     private void ChangeSocketWidth(
         int value)
     {
-        if (
-            context.SelectedSocket ==
-            null)
-        {
+        if (context.SelectedSocket == null)
             return;
-        }
-
 
         RecordImmediateUndo(
             "Change Socket Width"
         );
 
-
-        context.SelectedSocket
-            .SetWidth(
-                value
-            );
-
+        context.SelectedSocket.SetWidth(
+            value
+        );
 
         MarkRoomDirty();
     }
-
 
     private void DeleteSelectedSocket()
     {
         RoomSocketData socket =
             context.SelectedSocket;
 
-
         if (
             socket == null ||
-            context.CurrentRoom ==
-            null)
+            context.CurrentRoom == null)
         {
             return;
         }
-
 
         RecordImmediateUndo(
             "Delete Socket"
         );
 
-
-        context.CurrentRoom
-            .RemoveSocket(
-                socket
-            );
-
+        context.CurrentRoom.RemoveSocket(
+            socket
+        );
 
         context.ClearSelection();
 
-
         MarkRoomDirty();
-
         ui.GridCanvas.Refresh();
     }
-
-
-    // =========================================================
-    // Inspector Cell
-    // =========================================================
 
     private void ChangeSelectedCellType(
         CellTypeDefinition type)
@@ -1460,26 +1255,24 @@ public sealed class RoomEditorController
         CellData cell =
             GetSelectedCell();
 
-
-        if (cell == null)
+        if (
+            cell == null ||
+            !CanEditActiveLayer())
+        {
             return;
-
+        }
 
         RecordImmediateUndo(
             "Change Cell Type"
         );
 
-
         cell.SetType(
             type
         );
 
-
         MarkRoomDirty();
-
         ui.GridCanvas.Refresh();
     }
-
 
     private void ChangeSelectedCellEnabled(
         bool enabled)
@@ -1487,212 +1280,277 @@ public sealed class RoomEditorController
         CellData cell =
             GetSelectedCell();
 
-
-        if (cell == null)
+        if (
+            cell == null ||
+            !CanEditActiveLayer())
+        {
             return;
-
+        }
 
         RecordImmediateUndo(
             "Change Cell Enabled"
         );
 
-
         cell.SetEnabled(
             enabled
         );
 
-
         MarkRoomDirty();
-
         ui.GridCanvas.Refresh();
     }
-
 
     private CellData GetSelectedCell()
     {
         if (
-            !context.SelectedCell.HasValue ||
-            context.CurrentRoom ==
-            null ||
-            context.ActiveLayer ==
-            null)
+            context.CurrentRoom == null ||
+            context.ActiveLayer == null ||
+            !context.SelectedCell.HasValue)
         {
             return null;
         }
 
-
         return
-            context.CurrentRoom
-                .GetCell(
-                    context.ActiveLayer,
-                    context.SelectedCell.Value
-                );
+            context.CurrentRoom.GetCell(
+                context.ActiveLayer,
+                context.SelectedCell.Value
+            );
     }
-
-
-    // =========================================================
-    // Resize
-    // =========================================================
 
     private void ResizeRoom(
         int width,
         int height)
     {
-        if (
-            context.CurrentRoom ==
-            null)
-        {
-            return;
-        }
+        RoomDefinition room =
+            context.CurrentRoom;
 
+        if (room == null)
+            return;
 
         RecordImmediateUndo(
             "Resize Room"
         );
 
-
-        context.CurrentRoom.Resize(
+        room.Resize(
             width,
             height
         );
-
 
         context.SetGridMetrics(
-            width,
-            height
+            room.Width,
+            room.Height
         );
-
 
         context.ClearSelection();
 
-
         MarkRoomDirty();
-
         RefreshAll();
     }
-
-
-    // =========================================================
-    // Rendering
-    // =========================================================
 
     private Color? GetCellColor(
         Vector2Int position)
     {
-        if (
-            context.CurrentRoom ==
-            null ||
-            context.ActiveLayer ==
-            null ||
-            !context.ActiveLayer.Visible)
-        {
+        RoomDefinition room =
+            context.CurrentRoom;
+
+        if (room == null)
             return null;
-        }
 
+        Color composite =
+            EditorGUIUtility.isProSkin
+                ? new Color(
+                    0.12f,
+                    0.13f,
+                    0.15f,
+                    1f
+                )
+                : new Color(
+                    0.83f,
+                    0.83f,
+                    0.84f,
+                    1f
+                );
 
-        CellData cell =
-            context.CurrentRoom
-                .GetCell(
-                    context.ActiveLayer,
+        bool hasContent =
+            false;
+
+        foreach (RoomLayerData layer in room.Layers)
+        {
+            if (
+                layer == null ||
+                !layer.Visible ||
+                ReferenceEquals(
+                    layer,
+                    context.ActiveLayer
+                ))
+            {
+                continue;
+            }
+
+            CellData cell =
+                room.GetCell(
+                    layer,
                     position
                 );
 
+            if (
+                cell == null ||
+                cell.Type == null)
+            {
+                continue;
+            }
+
+            Color color =
+                cell.Type.EditorColor;
+
+            float opacity =
+                InactiveLayerOpacity;
+
+            if (!cell.Enabled)
+                opacity *= 0.35f;
+
+            color.a =
+                Mathf.Clamp01(
+                    color.a *
+                    opacity
+                );
+
+            composite =
+                BlendColor(
+                    composite,
+                    color
+                );
+
+            hasContent =
+                true;
+        }
+
+        RoomLayerData activeLayer =
+            context.ActiveLayer;
 
         if (
-            cell?.Type ==
-            null)
+            activeLayer != null &&
+            activeLayer.Visible)
         {
-            return null;
+            CellData activeCell =
+                room.GetCell(
+                    activeLayer,
+                    position
+                );
+
+            if (
+                activeCell != null &&
+                activeCell.Type != null)
+            {
+                Color color =
+                    activeCell.Type.EditorColor;
+
+                float opacity =
+                    activeCell.Enabled
+                        ? 1f
+                        : 0.35f;
+
+                color.a =
+                    Mathf.Clamp01(
+                        color.a *
+                        opacity
+                    );
+
+                composite =
+                    BlendColor(
+                        composite,
+                        color
+                    );
+
+                hasContent =
+                    true;
+            }
         }
 
-
-        Color color =
-            cell.Type.EditorColor;
-
-
-        if (!cell.Enabled)
-        {
-            color.a *=
-                0.35f;
-        }
-
-
-        return color;
+        return
+            hasContent
+                ? composite
+                : null;
     }
 
+    private static Color BlendColor(
+        Color background,
+        Color overlay)
+    {
+        float alpha =
+            Mathf.Clamp01(
+                overlay.a
+            );
+
+        return new Color(
+            Mathf.Lerp(
+                background.r,
+                overlay.r,
+                alpha
+            ),
+            Mathf.Lerp(
+                background.g,
+                overlay.g,
+                alpha
+            ),
+            Mathf.Lerp(
+                background.b,
+                overlay.b,
+                alpha
+            ),
+            1f
+        );
+    }
 
     private RoomSocketData GetSocketAt(
         Vector2Int position)
     {
         return
-            context.CurrentRoom
-                ?.GetSocketAt(
-                    position
-                );
+            context.CurrentRoom?.GetSocketAt(
+                position
+            );
     }
-
-
-    // =========================================================
-    // Validation
-    // =========================================================
 
     private bool CanEditActiveLayer()
     {
+        RoomLayerData layer =
+            context.ActiveLayer;
+
         if (
-            context.CurrentRoom ==
-            null ||
-            context.ActiveLayer ==
-            null)
+            context.CurrentRoom == null ||
+            layer == null)
         {
             return false;
         }
 
-
-        if (
-            context.ActiveLayer.Locked)
+        if (layer.Locked)
         {
             ui.SetStatus(
-                "Active layer is locked."
+                $"'{layer.DisplayName}' is locked."
             );
-
 
             return false;
         }
-
 
         return true;
     }
-
-
-    // =========================================================
-    // Undo
-    // =========================================================
 
     private void OnStrokeStarted()
     {
         strokeActive =
             true;
 
-
         strokeUndoRecorded =
             false;
-
 
         strokeUndoGroup =
             -1;
     }
 
-
     private void EnsureStrokeUndo(
         string name)
     {
-        if (
-            context.CurrentRoom ==
-            null)
-        {
+        if (context.CurrentRoom == null)
             return;
-        }
-
 
         if (!strokeActive)
         {
@@ -1700,74 +1558,56 @@ public sealed class RoomEditorController
                 name
             );
 
-
             return;
         }
-
 
         if (strokeUndoRecorded)
             return;
 
-
         Undo.IncrementCurrentGroup();
-
 
         strokeUndoGroup =
             Undo.GetCurrentGroup();
 
-
         Undo.SetCurrentGroupName(
             name
         );
-
 
         Undo.RegisterCompleteObjectUndo(
             context.CurrentRoom,
             name
         );
 
-
         strokeUndoRecorded =
             true;
     }
-
 
     private void OnStrokeEnded()
     {
         if (
             strokeUndoRecorded &&
-            strokeUndoGroup >=
-            0)
+            strokeUndoGroup >= 0)
         {
             Undo.CollapseUndoOperations(
                 strokeUndoGroup
             );
         }
 
-
         strokeActive =
             false;
 
-
         strokeUndoRecorded =
             false;
-
 
         strokeUndoGroup =
             -1;
     }
 
-
     private void RecordImmediateUndo(
         string name)
     {
-        if (
-            context.CurrentRoom ==
-            null)
-        {
+        if (context.CurrentRoom == null)
             return;
-        }
-
 
         Undo.RegisterCompleteObjectUndo(
             context.CurrentRoom,
@@ -1775,58 +1615,60 @@ public sealed class RoomEditorController
         );
     }
 
-
-    private void MarkRoomDirty()
+    private void MarkRoomDirty(
+        bool refreshPreview = true)
     {
-        if (
-            context.CurrentRoom ==
-            null)
-        {
+        if (context.CurrentRoom == null)
             return;
-        }
-
 
         EditorUtility.SetDirty(
             context.CurrentRoom
         );
 
-
         ui.Toolbar.SetDirty(
             true
         );
+
+        if (refreshPreview)
+        {
+            ui.Preview.NotifyRoomContentChanged();
+        }
     }
-
-
-    // =========================================================
-    // Refresh
-    // =========================================================
 
     private void SetRoom(
         RoomDefinition room)
     {
+        if (room != null)
+            room.EnsureIntegrity();
+
         context.SetRoom(
             room
         );
 
-
         context.SetActiveLayer(
             room != null &&
-            room.Layers.Count >
-            0
+            room.Layers.Count > 0
                 ? room.Layers[0]
                 : null
         );
 
+        ui.Toolbar.SetDirty(
+            false
+        );
+
+        ui.Toolbar.SetValidationState(
+            "Not validated"
+        );
 
         RefreshAll();
-    }
 
+        ui.Preview.NotifyRoomContentChanged();
+    }
 
     private void RefreshAll()
     {
         RoomDefinition room =
             context.CurrentRoom;
-
 
         if (room == null)
         {
@@ -1834,57 +1676,56 @@ public sealed class RoomEditorController
                 "Untitled Room"
             );
 
-
             ui.Layers.SetLayers(
-                Array.Empty<RoomLayerData>()
+                Array.Empty<
+                    RoomLayerData
+                >()
             );
-
 
             ui.Inspector.ShowNoRoom();
 
-
             ui.GridCanvas.Refresh();
-
 
             return;
         }
 
-
         room.EnsureIntegrity();
-
 
         context.SetGridMetrics(
             room.Width,
             room.Height
         );
 
-
         if (
-            context.ActiveLayer ==
-            null)
+            context.ActiveLayer == null ||
+            IndexOfLayer(
+                room,
+                context.ActiveLayer
+            ) < 0)
         {
             context.SetActiveLayer(
-                room.Layers[0]
+                room.Layers.Count > 0
+                    ? room.Layers[0]
+                    : null
             );
         }
-
 
         ui.Toolbar.SetRoomName(
             room.name
         );
 
-
         ui.Layers.SetLayers(
             room.Layers
         );
 
+        ui.Layers.SelectLayer(
+            context.ActiveLayer
+        );
 
         ui.GridCanvas.Refresh();
 
-
         RefreshInspector();
     }
-
 
     private void RefreshAfterLayerChanged()
     {
@@ -1892,72 +1733,53 @@ public sealed class RoomEditorController
             context.ActiveLayer
         );
 
-
         ui.GridCanvas.Refresh();
-
 
         RefreshInspector();
     }
 
-
     private void RefreshInspector()
     {
-        if (
-            context.CurrentRoom ==
-            null)
+        RoomDefinition room =
+            context.CurrentRoom;
+
+        if (room == null)
         {
             ui.Inspector.ShowNoRoom();
-
             return;
         }
 
-
-        if (
-            context.SelectedSocket !=
-            null)
+        if (context.SelectedSocket != null)
         {
             ui.Inspector.ShowSocket(
                 context.SelectedSocket
             );
 
-
             return;
         }
 
-
-        if (
-            context.SelectedGroup !=
-            null)
+        if (context.SelectedGroup != null)
         {
             ui.Inspector.ShowGroup(
                 context.SelectedGroup
             );
 
-
             return;
         }
 
-
-        if (
-            context.SelectionCount >
-            1)
+        if (context.SelectionCount > 1)
         {
             ui.Inspector.ShowMultipleCells(
                 context.SelectionCount
             );
 
-
             return;
         }
 
-
-        if (
-            context.SelectedCell
-                .HasValue)
+        if (context.SelectedCell.HasValue)
         {
             CellData cell =
                 GetSelectedCell();
-
 
             if (cell != null)
             {
@@ -1967,96 +1789,243 @@ public sealed class RoomEditorController
                     cell.Enabled
                 );
 
-
                 return;
             }
         }
 
-
         ui.Inspector.ShowRoom(
-            context.CurrentRoom.Width,
-            context.CurrentRoom.Height
+            room.Width,
+            room.Height
         );
     }
-
 
     private void OnUndoRedoPerformed()
     {
         context.CurrentRoom
             ?.EnsureIntegrity();
 
-
         RefreshAll();
+
+        ui.Preview.NotifyRoomContentChanged();
+
+        ui.SetStatus(
+            "Undo / Redo applied"
+        );
     }
 
+    private bool ConfirmDiscardUnsavedChanges()
+    {
+        RoomDefinition room =
+            context.CurrentRoom;
 
-    // =========================================================
-    // Unbind / Dispose
-    // =========================================================
+        if (
+            room == null ||
+            !EditorUtility.IsDirty(room))
+        {
+            return true;
+        }
+
+        int result =
+            EditorUtility.DisplayDialogComplex(
+                "Unsaved Room",
+                $"'{room.name}' contains unsaved changes.",
+                "Save",
+                "Cancel",
+                "Discard"
+            );
+
+        switch (result)
+        {
+            case 0:
+                SaveRoom();
+                return true;
+
+            case 2:
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    private static CellGroupData GetGroupAtCellOnLayer(
+        RoomDefinition room,
+        Vector2Int position,
+        string layerId)
+    {
+        if (
+            room == null ||
+            string.IsNullOrWhiteSpace(layerId))
+        {
+            return null;
+        }
+
+        foreach (CellGroupData group in room.Groups)
+        {
+            if (
+                group != null &&
+                group.LayerId == layerId &&
+                group.Contains(position))
+            {
+                return group;
+            }
+        }
+
+        return null;
+    }
+
+    private static int IndexOfLayer(
+        RoomDefinition room,
+        RoomLayerData layer)
+    {
+        if (
+            room == null ||
+            layer == null)
+        {
+            return -1;
+        }
+
+        for (
+            int i = 0;
+            i < room.Layers.Count;
+            i++)
+        {
+            if (
+                ReferenceEquals(
+                    room.Layers[i],
+                    layer
+                ))
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
 
     private void UnbindInput()
     {
-        if (
-            inputHandler ==
-            null)
-        {
+        if (inputHandler == null)
             return;
-        }
-
 
         inputHandler.StrokeStarted -=
             OnStrokeStarted;
 
-
         inputHandler.StrokeEnded -=
             OnStrokeEnded;
-
 
         inputHandler.SelectionRequested -=
             OnSelectionRequested;
 
-
         inputHandler.PaintRequested -=
             OnPaintRequested;
-
 
         inputHandler.EraseRequested -=
             OnEraseRequested;
 
-
         inputHandler.FillRequested -=
             OnFillRequested;
-
 
         inputHandler.GroupRequested -=
             OnGroupRequested;
 
-
         inputHandler.SocketRequested -=
             OnSocketRequested;
-
 
         inputHandler =
             null;
     }
 
-
     public void Dispose()
     {
         UnbindInput();
 
+        ui.Toolbar.NewRequested -=
+            CreateNewRoom;
+
+        ui.Toolbar.LoadRequested -=
+            LoadRoom;
+
+        ui.Toolbar.SaveRequested -=
+            SaveRoom;
+
+        ui.Toolbar.UndoRequested -=
+            PerformUndo;
+
+        ui.Toolbar.RedoRequested -=
+            PerformRedo;
+
+        ui.Toolbar.ValidateRequested -=
+            ValidateRoom;
+
+        ui.Layers.AddRequested -=
+            AddLayer;
+
+        ui.Layers.DuplicateRequested -=
+            DuplicateLayer;
+
+        ui.Layers.DeleteRequested -=
+            DeleteLayer;
+
+        ui.Layers.MoveUpRequested -=
+            MoveLayerUp;
+
+        ui.Layers.MoveDownRequested -=
+            MoveLayerDown;
+
+        ui.Layers.RenameRequested -=
+            RenameLayer;
+
+        ui.Layers.VisibilityChanged -=
+            ChangeLayerVisibility;
+
+        ui.Layers.LockChanged -=
+            ChangeLayerLock;
+
+        ui.Inspector.RoomResizeRequested -=
+            ResizeRoom;
+
+        ui.Inspector.CellTypeChanged -=
+            ChangeSelectedCellType;
+
+        ui.Inspector.CellEnabledChanged -=
+            ChangeSelectedCellEnabled;
+
+        ui.Inspector.GroupIdChanged -=
+            ChangeGroupId;
+
+        ui.Inspector.GroupLabelChanged -=
+            ChangeGroupLabel;
+
+        ui.Inspector.ClearGroupRequested -=
+            DeleteSelectedGroup;
+
+        ui.Inspector.SocketIdChanged -=
+            ChangeSocketId;
+
+        ui.Inspector.SocketDirectionChanged -=
+            ChangeSocketDirection;
+
+        ui.Inspector.SocketRoleChanged -=
+            ChangeSocketRole;
+
+        ui.Inspector.SocketTypeChanged -=
+            ChangeSocketType;
+
+        ui.Inspector.SocketWidthChanged -=
+            ChangeSocketWidth;
+
+        ui.Inspector.RemoveSocketRequested -=
+            DeleteSelectedSocket;
 
         context.RoomChanged -=
             RefreshAll;
 
-
         context.ActiveLayerChanged -=
             RefreshAfterLayerChanged;
 
-
         context.SelectionChanged -=
             RefreshInspector;
-
 
         Undo.undoRedoPerformed -=
             OnUndoRedoPerformed;

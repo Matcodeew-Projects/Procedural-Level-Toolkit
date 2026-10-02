@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e689168f9648b9f40a5ba7e44859c34a, type: 3}
-  m_Name: EnelmySpawn
+  m_Name: EnemySpawn
   m_EditorClassIdentifier: Matcodeew.MazeToolkit.Runtime::CellTypeDefinition
-  displayName: PlayerSpawn
+  displayName: EnemySpawn
   editorColor: {r: 0.24180001, g: 1, b: 0, a: 1}

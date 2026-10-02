@@ -1,146 +1,144 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 public sealed class LayersPanelUI
     : IDisposable
 {
-    private readonly RoomEditorContext
-        context;
-
+    private readonly RoomEditorContext context;
 
     private readonly ListView layerList;
-
     private readonly Label layerCountLabel;
-
     private readonly Label activeLayerLabel;
 
+    private readonly List<RoomLayerData> layers =
+        new();
 
-    private readonly List<RoomLayerData>
-        layers =
-            new();
 
+    // =========================================================
+    // Events
+    // =========================================================
 
     public event Action AddRequested;
-
     public event Action DuplicateRequested;
-
     public event Action DeleteRequested;
-
     public event Action MoveUpRequested;
-
     public event Action MoveDownRequested;
-
 
     public event Action<RoomLayerData>
         SelectionChanged;
 
-
-    public event Action<
-        RoomLayerData,
-        string
-    >
+    public event Action<RoomLayerData, string>
         RenameRequested;
 
-
-    public event Action<
-        RoomLayerData,
-        bool
-    >
+    public event Action<RoomLayerData, bool>
         VisibilityChanged;
 
-
-    public event Action<
-        RoomLayerData,
-        bool
-    >
+    public event Action<RoomLayerData, bool>
         LockChanged;
 
+
+    // =========================================================
+    // Constructor
+    // =========================================================
 
     public LayersPanelUI(
         VisualElement root,
         RoomEditorContext context)
     {
         this.context =
-            context;
+            context
+            ?? throw new ArgumentNullException(
+                nameof(context)
+            );
 
 
         layerList =
-            root.Q<ListView>(
+            Require<ListView>(
+                root,
                 "layer-list"
-            )
-            ??
-            throw new InvalidOperationException(
-                "[RoomEditor] Missing 'layer-list'."
             );
 
-
         layerCountLabel =
-            root.Q<Label>(
+            Require<Label>(
+                root,
                 "layer-count-label"
             );
 
-
         activeLayerLabel =
-            root.Q<Label>(
+            Require<Label>(
+                root,
                 "active-layer-label"
             );
 
 
-        layerList.makeItem =
-            CreateLayerRow;
-
-
-        layerList.bindItem =
-            BindLayerRow;
-
+        // =====================================================
+        // List
+        // =====================================================
 
         layerList.selectionType =
             SelectionType.Single;
 
+        layerList.fixedItemHeight =
+            32f;
+
+        layerList.makeItem =
+            CreateLayerRow;
+
+        layerList.bindItem =
+            BindLayerRow;
 
         layerList.selectionChanged +=
             OnSelectionChanged;
 
 
-        root.Q<Button>(
+        // =====================================================
+        // Buttons
+        // =====================================================
+
+        Require<Button>(
+            root,
             "add-layer-button"
         ).clicked +=
-            () =>
-                AddRequested?.Invoke();
+            OnAddClicked;
 
 
-        root.Q<Button>(
+        Require<Button>(
+            root,
             "duplicate-layer-button"
         ).clicked +=
-            () =>
-                DuplicateRequested?.Invoke();
+            OnDuplicateClicked;
 
 
-        root.Q<Button>(
+        Require<Button>(
+            root,
             "delete-layer-button"
         ).clicked +=
-            () =>
-                DeleteRequested?.Invoke();
+            OnDeleteClicked;
 
 
-        root.Q<Button>(
+        Require<Button>(
+            root,
             "move-layer-up-button"
         ).clicked +=
-            () =>
-                MoveUpRequested?.Invoke();
+            OnMoveUpClicked;
 
 
-        root.Q<Button>(
+        Require<Button>(
+            root,
             "move-layer-down-button"
         ).clicked +=
-            () =>
-                MoveDownRequested?.Invoke();
+            OnMoveDownClicked;
 
+
+        // =====================================================
+        // Context
+        // =====================================================
 
         context.ActiveLayerChanged +=
-            RefreshActiveLayerLabel;
+            OnActiveLayerChanged;
 
 
         SetLayers(
@@ -150,121 +148,224 @@ public sealed class LayersPanelUI
 
 
     // =========================================================
-    // Row
+    // Create Row
     // =========================================================
 
     private VisualElement CreateLayerRow()
     {
         VisualElement row =
-            new();
+            new VisualElement();
 
+        row.name =
+            "layer-row";
 
-        row.style.flexDirection =
-            FlexDirection.Row;
-
-
-        row.style.alignItems =
-            Align.Center;
-
-
-        row.style.height =
-            24f;
-
-
-        Toggle visible =
-            new()
-            {
-                name =
-                    "layer-row-visible",
-
-                tooltip =
-                    "Visible"
-            };
-
-
-        visible.style.width =
-            28f;
-
-
-        Toggle locked =
-            new()
-            {
-                name =
-                    "layer-row-locked",
-
-                tooltip =
-                    "Locked"
-            };
-
-
-        locked.style.width =
-            28f;
-
-
-        TextField nameField =
-            new()
-            {
-                name =
-                    "layer-row-name",
-
-                isDelayed =
-                    true
-            };
-
-
-        nameField.style.flexGrow =
-            1f;
-
-
-        row.Add(
-            visible
+        row.AddToClassList(
+            "layer-row"
         );
 
 
-        row.Add(
-            locked
+        // =====================================================
+        // Active accent
+        // =====================================================
+
+        VisualElement accent =
+            new VisualElement();
+
+        accent.name =
+            "layer-row-accent";
+
+        accent.AddToClassList(
+            "layer-row__accent"
         );
 
 
-        row.Add(
-            nameField
+        // =====================================================
+        // Visibility
+        // =====================================================
+
+        Button visibleButton =
+            new Button();
+
+        visibleButton.name =
+            "layer-row-visible";
+
+        visibleButton.AddToClassList(
+            "layer-row__state-button"
+        );
+
+        visibleButton.tooltip =
+            "Toggle layer visibility";
+
+
+        // =====================================================
+        // Lock
+        // =====================================================
+
+        Button lockButton =
+            new Button();
+
+        lockButton.name =
+            "layer-row-locked";
+
+        lockButton.AddToClassList(
+            "layer-row__state-button"
+        );
+
+        lockButton.tooltip =
+            "Toggle layer lock";
+
+
+        // =====================================================
+        // Layer name
+        // =====================================================
+
+        Button nameButton =
+            new Button();
+
+        nameButton.name =
+            "layer-row-select";
+
+        nameButton.AddToClassList(
+            "layer-row__name-button"
+        );
+
+        nameButton.tooltip =
+            "Click to select. Double-click to rename.";
+
+
+        // =====================================================
+        // Rename field
+        // =====================================================
+
+        TextField renameField =
+            new TextField();
+
+        renameField.name =
+            "layer-row-rename";
+
+        renameField.isDelayed =
+            false;
+
+        renameField.AddToClassList(
+            "layer-row__rename-field"
+        );
+
+        renameField.AddToClassList(
+            "hidden"
         );
 
 
-        row.RegisterCallback<
+        // =====================================================
+        // Hierarchy
+        // =====================================================
+
+        row.Add(
+            accent
+        );
+
+        row.Add(
+            visibleButton
+        );
+
+        row.Add(
+            lockButton
+        );
+
+        row.Add(
+            nameButton
+        );
+
+        row.Add(
+            renameField
+        );
+
+
+        // =====================================================
+        // Name interaction
+        // =====================================================
+
+        nameButton.RegisterCallback<
             PointerDownEvent
         >(
-            OnLayerRowPointerDown,
+            evt =>
+                OnNamePointerDown(
+                    evt,
+                    nameButton,
+                    renameField
+                ),
             TrickleDown.TrickleDown
         );
 
 
-        visible
-            .RegisterValueChangedCallback(
-                OnVisibilityChanged
-            );
+        // =====================================================
+        // Rename interaction
+        // =====================================================
+
+        renameField.RegisterCallback<
+            KeyDownEvent
+        >(
+            evt =>
+                OnRenameKeyDown(
+                    evt,
+                    renameField,
+                    nameButton
+                )
+        );
 
 
-        locked
-            .RegisterValueChangedCallback(
-                OnLockChanged
-            );
+        renameField.RegisterCallback<
+            FocusOutEvent
+        >(
+            evt =>
+                CommitRename(
+                    renameField,
+                    nameButton
+                )
+        );
 
 
-        nameField
-            .RegisterValueChangedCallback(
-                OnNameChanged
-            );
+        // =====================================================
+        // Visibility
+        // =====================================================
+
+        visibleButton.clicked +=
+            () =>
+                ToggleVisibility(
+                    visibleButton
+                );
+
+
+        // =====================================================
+        // Lock
+        // =====================================================
+
+        lockButton.clicked +=
+            () =>
+                ToggleLock(
+                    lockButton
+                );
 
 
         return row;
     }
 
 
+    // =========================================================
+    // Bind Row
+    // =========================================================
+
     private void BindLayerRow(
         VisualElement row,
         int index)
     {
+        if (
+            index < 0 ||
+            index >= layers.Count)
+        {
+            return;
+        }
+
+
         RoomLayerData layer =
             layers[index];
 
@@ -273,65 +374,181 @@ public sealed class LayersPanelUI
             layer;
 
 
-        Toggle visible =
-            row.Q<Toggle>(
+        VisualElement accent =
+            row.Q<VisualElement>(
+                "layer-row-accent"
+            );
+
+
+        Button visibleButton =
+            row.Q<Button>(
                 "layer-row-visible"
             );
 
 
-        Toggle locked =
-            row.Q<Toggle>(
+        Button lockButton =
+            row.Q<Button>(
                 "layer-row-locked"
             );
 
 
-        TextField nameField =
+        Button nameButton =
+            row.Q<Button>(
+                "layer-row-select"
+            );
+
+
+        TextField renameField =
             row.Q<TextField>(
-                "layer-row-name"
+                "layer-row-rename"
             );
 
 
-        visible.userData =
+        accent.userData =
+            layer;
+
+        visibleButton.userData =
+            layer;
+
+        lockButton.userData =
+            layer;
+
+        nameButton.userData =
+            layer;
+
+        renameField.userData =
             layer;
 
 
-        locked.userData =
-            layer;
-
-
-        nameField.userData =
-            layer;
-
-
-        visible
-            .SetValueWithoutNotify(
-                layer.Visible
+        bool active =
+            ReferenceEquals(
+                layer,
+                context.ActiveLayer
             );
 
 
-        locked
-            .SetValueWithoutNotify(
-                layer.Locked
-            );
+        // =====================================================
+        // Active state
+        // =====================================================
+
+        row.EnableInClassList(
+            "layer-row--active",
+            active
+        );
 
 
-        nameField
+        accent.EnableInClassList(
+            "layer-row__accent--active",
+            active
+        );
+
+
+        nameButton.EnableInClassList(
+            "layer-row__name-button--active",
+            active
+        );
+
+
+        // =====================================================
+        // Name
+        // =====================================================
+
+        nameButton.text =
+            layer.DisplayName;
+
+
+        renameField
             .SetValueWithoutNotify(
                 layer.DisplayName
             );
+
+
+        renameField.AddToClassList(
+            "hidden"
+        );
+
+
+        nameButton.RemoveFromClassList(
+            "hidden"
+        );
+
+
+        // =====================================================
+        // Visibility state
+        // =====================================================
+
+        visibleButton.text =
+            layer.Visible
+                ? "V"
+                : "—";
+
+
+        visibleButton.tooltip =
+            layer.Visible
+                ? "Layer visible"
+                : "Layer hidden";
+
+
+        visibleButton.EnableInClassList(
+            "layer-row__state-button--on",
+            layer.Visible
+        );
+
+
+        visibleButton.EnableInClassList(
+            "layer-row__state-button--off",
+            !layer.Visible
+        );
+
+
+        // =====================================================
+        // Lock state
+        // =====================================================
+
+        lockButton.text =
+            layer.Locked
+                ? "L"
+                : "—";
+
+
+        lockButton.tooltip =
+            layer.Locked
+                ? "Layer locked"
+                : "Layer unlocked";
+
+
+        lockButton.EnableInClassList(
+            "layer-row__state-button--on",
+            layer.Locked
+        );
+
+
+        lockButton.EnableInClassList(
+            "layer-row__state-button--off",
+            !layer.Locked
+        );
     }
 
 
-    private void OnLayerRowPointerDown(
-        PointerDownEvent evt)
+    // =========================================================
+    // Name Click
+    // =========================================================
+
+    private void OnNamePointerDown(
+        PointerDownEvent evt,
+        Button nameButton,
+        TextField renameField)
     {
-        VisualElement row =
-            evt.currentTarget
-            as VisualElement;
+        if (
+            evt.button !=
+            0)
+        {
+            return;
+        }
 
 
         RoomLayerData layer =
-            row?.userData
+            nameButton.userData
             as RoomLayerData;
 
 
@@ -339,31 +556,112 @@ public sealed class LayersPanelUI
             return;
 
 
+        // =====================================================
+        // Always select the layer
+        // =====================================================
+
+        SelectLayerInternal(
+            layer
+        );
+
+
+        // =====================================================
+        // Double-click → Rename
+        // =====================================================
+
+        if (
+            evt.clickCount >=
+            2)
+        {
+            /*
+             * On attend la fin du traitement de l'événement.
+             *
+             * Cela évite que le refresh lié à la sélection
+             * ferme immédiatement le TextField.
+             */
+            nameButton.schedule.Execute(
+                () =>
+                {
+                    BeginRename(
+                        nameButton,
+                        renameField
+                    );
+                }
+            );
+        }
+
+
+        evt.StopImmediatePropagation();
+    }
+
+
+    // =========================================================
+    // Selection
+    // =========================================================
+
+    private void SelectLayerInternal(
+        RoomLayerData layer)
+    {
         int index =
             layers.IndexOf(
                 layer
             );
 
 
-        if (index >= 0)
+        if (index < 0)
+            return;
+
+
+        if (
+            ReferenceEquals(
+                context.ActiveLayer,
+                layer
+            ))
         {
-            layerList.SetSelection(
-                index
-            );
+            return;
         }
+
+
+        layerList.SetSelection(
+            index
+        );
     }
 
 
-    private void OnNameChanged(
-        ChangeEvent<string> evt)
+    private void OnSelectionChanged(
+        IEnumerable<object> selection)
     {
-        TextField field =
-            evt.target
-            as TextField;
-
-
         RoomLayerData layer =
-            field?.userData
+            selection
+                .OfType<RoomLayerData>()
+                .FirstOrDefault();
+
+
+        if (layer == null)
+            return;
+
+
+        context.SetActiveLayer(
+            layer
+        );
+
+
+        SelectionChanged?.Invoke(
+            layer
+        );
+    }
+
+
+    // =========================================================
+    // Begin Rename
+    // =========================================================
+
+    private static void BeginRename(
+        Button nameButton,
+        TextField renameField)
+    {
+        RoomLayerData layer =
+            nameButton.userData
             as RoomLayerData;
 
 
@@ -371,23 +669,192 @@ public sealed class LayersPanelUI
             return;
 
 
-        RenameRequested?.Invoke(
-            layer,
-            evt.newValue
+        renameField
+            .SetValueWithoutNotify(
+                layer.DisplayName
+            );
+
+
+        nameButton.AddToClassList(
+            "hidden"
+        );
+
+
+        renameField.RemoveFromClassList(
+            "hidden"
+        );
+
+
+        renameField.Focus();
+    }
+
+
+    // =========================================================
+    // Rename Keyboard
+    // =========================================================
+
+    private void OnRenameKeyDown(
+        KeyDownEvent evt,
+        TextField renameField,
+        Button nameButton)
+    {
+        if (
+            evt.keyCode ==
+            KeyCode.Return ||
+            evt.keyCode ==
+            KeyCode.KeypadEnter)
+        {
+            CommitRename(
+                renameField,
+                nameButton
+            );
+
+
+            evt.StopImmediatePropagation();
+
+            return;
+        }
+
+
+        if (
+            evt.keyCode ==
+            KeyCode.Escape)
+        {
+            CancelRename(
+                renameField,
+                nameButton
+            );
+
+
+            evt.StopImmediatePropagation();
+        }
+    }
+
+
+    // =========================================================
+    // Commit Rename
+    // =========================================================
+
+    private void CommitRename(
+        TextField renameField,
+        Button nameButton)
+    {
+        if (
+            renameField.ClassListContains(
+                "hidden"
+            ))
+        {
+            return;
+        }
+
+
+        RoomLayerData layer =
+            renameField.userData
+            as RoomLayerData;
+
+
+        if (layer == null)
+        {
+            EndRename(
+                renameField,
+                nameButton
+            );
+
+
+            return;
+        }
+
+
+        string newName =
+            renameField.value
+                ?.Trim();
+
+
+        if (
+            string.IsNullOrWhiteSpace(
+                newName
+            ))
+        {
+            renameField
+                .SetValueWithoutNotify(
+                    layer.DisplayName
+                );
+        }
+        else if (
+            newName !=
+            layer.DisplayName)
+        {
+            RenameRequested?.Invoke(
+                layer,
+                newName
+            );
+        }
+
+
+        EndRename(
+            renameField,
+            nameButton
         );
     }
 
 
-    private void OnVisibilityChanged(
-        ChangeEvent<bool> evt)
+    // =========================================================
+    // Cancel Rename
+    // =========================================================
+
+    private static void CancelRename(
+        TextField renameField,
+        Button nameButton)
     {
-        Toggle toggle =
-            evt.target
-            as Toggle;
-
-
         RoomLayerData layer =
-            toggle?.userData
+            renameField.userData
+            as RoomLayerData;
+
+
+        if (layer != null)
+        {
+            renameField
+                .SetValueWithoutNotify(
+                    layer.DisplayName
+                );
+        }
+
+
+        EndRename(
+            renameField,
+            nameButton
+        );
+    }
+
+
+    // =========================================================
+    // End Rename
+    // =========================================================
+
+    private static void EndRename(
+        TextField renameField,
+        Button nameButton)
+    {
+        renameField.AddToClassList(
+            "hidden"
+        );
+
+
+        nameButton.RemoveFromClassList(
+            "hidden"
+        );
+    }
+
+
+    // =========================================================
+    // Visibility
+    // =========================================================
+
+    private void ToggleVisibility(
+        Button button)
+    {
+        RoomLayerData layer =
+            button.userData
             as RoomLayerData;
 
 
@@ -397,21 +864,20 @@ public sealed class LayersPanelUI
 
         VisibilityChanged?.Invoke(
             layer,
-            evt.newValue
+            !layer.Visible
         );
     }
 
 
-    private void OnLockChanged(
-        ChangeEvent<bool> evt)
+    // =========================================================
+    // Lock
+    // =========================================================
+
+    private void ToggleLock(
+        Button button)
     {
-        Toggle toggle =
-            evt.target
-            as Toggle;
-
-
         RoomLayerData layer =
-            toggle?.userData
+            button.userData
             as RoomLayerData;
 
 
@@ -421,21 +887,17 @@ public sealed class LayersPanelUI
 
         LockChanged?.Invoke(
             layer,
-            evt.newValue
+            !layer.Locked
         );
     }
 
 
     // =========================================================
-    // Data
+    // Set Layers
     // =========================================================
 
     public void SetLayers(
-        IEnumerable<RoomLayerData> source,
-        Func<
-            RoomLayerData,
-            string
-        > displayName = null)
+        IEnumerable<RoomLayerData> source)
     {
         layers.Clear();
 
@@ -458,12 +920,9 @@ public sealed class LayersPanelUI
         layerList.Rebuild();
 
 
-        if (layerCountLabel != null)
-        {
-            layerCountLabel.text =
-                layers.Count
-                    .ToString();
-        }
+        layerCountLabel.text =
+            layers.Count
+                .ToString();
 
 
         SelectLayer(
@@ -474,6 +933,10 @@ public sealed class LayersPanelUI
         RefreshActiveLayerLabel();
     }
 
+
+    // =========================================================
+    // Select Layer
+    // =========================================================
 
     public void SelectLayer(
         RoomLayerData layer)
@@ -492,49 +955,153 @@ public sealed class LayersPanelUI
         }
 
 
-        layerList.SetSelection(
-            index
-        );
-    }
-
-
-    private void OnSelectionChanged(
-        IEnumerable<object> selection)
-    {
-        RoomLayerData layer =
-            selection
-                .OfType<RoomLayerData>()
-                .FirstOrDefault();
-
-
-        context.SetActiveLayer(
-            layer
-        );
-
-
-        SelectionChanged?.Invoke(
-            layer
-        );
-    }
-
-
-    private void RefreshActiveLayerLabel()
-    {
+        /*
+         * Important :
+         * on évite SetSelection si le layer
+         * est déjà actif.
+         *
+         * Ça évite des refresh inutiles
+         * et facilite le double-clic.
+         */
         if (
-            activeLayerLabel ==
-            null)
+            ReferenceEquals(
+                context.ActiveLayer,
+                layer
+            ))
         {
+            layerList.RefreshItems();
+
             return;
         }
 
 
-        activeLayerLabel.text =
-            context.ActiveLayer !=
-            null
-                ? $"Layer: {context.ActiveLayer.DisplayName}"
-                : "Layer: —";
+        layerList.SetSelection(
+            index
+        );
+
+
+        layerList.RefreshItems();
     }
 
+
+    // =========================================================
+    // Context Active Layer
+    // =========================================================
+
+    private void OnActiveLayerChanged()
+    {
+        RefreshActiveLayerLabel();
+
+
+        layerList.RefreshItems();
+    }
+
+
+    // =========================================================
+    // Active Layer Label
+    // =========================================================
+
+    private void RefreshActiveLayerLabel()
+    {
+        RoomLayerData layer =
+            context.ActiveLayer;
+
+
+        if (layer == null)
+        {
+            activeLayerLabel.text =
+                "Layer: —";
+
+            return;
+        }
+
+
+        string suffix =
+            string.Empty;
+
+
+        if (!layer.Visible)
+        {
+            suffix +=
+                " • Hidden";
+        }
+
+
+        if (layer.Locked)
+        {
+            suffix +=
+                " • Locked";
+        }
+
+
+        activeLayerLabel.text =
+            $"Layer: {layer.DisplayName}{suffix}";
+    }
+
+
+    // =========================================================
+    // Toolbar Buttons
+    // =========================================================
+
+    private void OnAddClicked()
+    {
+        AddRequested?.Invoke();
+    }
+
+
+    private void OnDuplicateClicked()
+    {
+        DuplicateRequested?.Invoke();
+    }
+
+
+    private void OnDeleteClicked()
+    {
+        DeleteRequested?.Invoke();
+    }
+
+
+    private void OnMoveUpClicked()
+    {
+        MoveUpRequested?.Invoke();
+    }
+
+
+    private void OnMoveDownClicked()
+    {
+        MoveDownRequested?.Invoke();
+    }
+
+
+    // =========================================================
+    // Query
+    // =========================================================
+
+    private static T Require<T>(
+        VisualElement root,
+        string name)
+        where T : VisualElement
+    {
+        T element =
+            root.Q<T>(
+                name
+            );
+
+
+        if (element != null)
+            return element;
+
+
+        throw new InvalidOperationException(
+            $"[RoomEditor] Missing UI element '{name}' " +
+            $"of type {typeof(T).Name}."
+        );
+    }
+
+
+    // =========================================================
+    // Dispose
+    // =========================================================
 
     public void Dispose()
     {
@@ -543,6 +1110,6 @@ public sealed class LayersPanelUI
 
 
         context.ActiveLayerChanged -=
-            RefreshActiveLayerLabel;
+            OnActiveLayerChanged;
     }
 }

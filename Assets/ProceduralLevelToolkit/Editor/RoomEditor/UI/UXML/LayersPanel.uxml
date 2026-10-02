@@ -1,26 +1,80 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         editor-extension-mode="True">
+<ui:UXML
+    xmlns:ui="UnityEngine.UIElements"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    editor-extension-mode="True">
 
-    <ui:VisualElement name="layers-panel" class="panel panel--grow">
-        <ui:VisualElement class="panel__header">
-            <ui:Label text="Layers" class="panel__title" />
-            <ui:Label name="layer-count-label" text="0" class="panel__meta" />
+    <ui:VisualElement
+        name="layers-panel"
+        class="panel panel--grow">
+
+        <ui:VisualElement
+            class="panel__header">
+
+            <ui:Label
+                text="Layers"
+                class="panel__title" />
+
+            <ui:Label
+                name="layer-count-label"
+                text="0"
+                class="panel__meta" />
+
         </ui:VisualElement>
 
-        <ui:VisualElement class="panel__body panel__body--grow">
-            <ui:ListView name="layer-list" class="layer-list" />
+        <ui:VisualElement
+            class="panel__body">
 
-            <ui:VisualElement class="layer-actions">
-                <ui:Button name="add-layer-button" text="+" class="button button--square" />
-                <ui:Button name="duplicate-layer-button" text="Duplicate" class="button button--compact layer-actions__wide" />
-                <ui:Button name="delete-layer-button" text="−" class="button button--square button--danger" />
+            <ui:Label
+                name="active-layer-label"
+                text="Layer: —"
+                class="section-title" />
+
+            <ui:ListView
+                name="layer-list"
+                class="layer-list" />
+
+            <ui:VisualElement
+                class="layer-toolbar-row">
+
+                <ui:Button
+                    name="add-layer-button"
+                    text="+"
+                    tooltip="Add Layer"
+                    class="button button--square" />
+
+                <ui:Button
+                    name="duplicate-layer-button"
+                    text="Duplicate"
+                    tooltip="Duplicate selected Layer"
+                    class="button button--compact layer-toolbar-row__main" />
+
+                <ui:Button
+                    name="delete-layer-button"
+                    text="−"
+                    tooltip="Delete selected Layer"
+                    class="button button--square" />
+
             </ui:VisualElement>
 
-            <ui:VisualElement class="layer-actions">
-                <ui:Button name="move-layer-up-button" text="Move Up" class="button button--compact layer-actions__half" />
-                <ui:Button name="move-layer-down-button" text="Move Down" class="button button--compact layer-actions__half" />
+            <ui:VisualElement
+                class="layer-toolbar-row">
+
+                <ui:Button
+                    name="move-layer-up-button"
+                    text="Up"
+                    tooltip="Move selected Layer up"
+                    class="button button--compact layer-toolbar-row__half" />
+
+                <ui:Button
+                    name="move-layer-down-button"
+                    text="Down"
+                    tooltip="Move selected Layer down"
+                    class="button button--compact layer-toolbar-row__half" />
+
             </ui:VisualElement>
+
         </ui:VisualElement>
+
     </ui:VisualElement>
+
 </ui:UXML>

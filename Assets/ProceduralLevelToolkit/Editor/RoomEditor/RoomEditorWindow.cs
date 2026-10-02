@@ -3,12 +3,16 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public sealed class RoomEditorWindow : EditorWindow
+public sealed class RoomEditorWindow
+    : EditorWindow
 {
     private RoomEditorContext context;
     private RoomEditorUI ui;
     private RoomEditorInputHandler inputHandler;
     private RoomEditorController controller;
+    private RoomPreviewController previewController;
+
+    private Button buildPrefabButton;
 
     [MenuItem("Procedural Level Toolkit/Room Editor")]
     public static void Open()
@@ -17,15 +21,21 @@ public sealed class RoomEditorWindow : EditorWindow
             GetWindow<RoomEditorWindow>();
 
         window.titleContent =
-            new GUIContent("Room Editor");
+            new GUIContent(
+                "Room Editor"
+            );
 
         window.minSize =
-            new Vector2(720f, 460f);
+            new Vector2(
+                720f,
+                460f
+            );
     }
 
     public void CreateGUI()
     {
         DisposeEditor();
+
         rootVisualElement.Clear();
 
         VisualTreeAsset template =
@@ -69,6 +79,12 @@ public sealed class RoomEditorWindow : EditorWindow
                 ui
             );
 
+        previewController =
+            new RoomPreviewController(
+                context,
+                ui.Preview
+            );
+
         inputHandler.Bind(
             ui.GridCanvas
         );
@@ -77,9 +93,40 @@ public sealed class RoomEditorWindow : EditorWindow
             inputHandler
         );
 
+        buildPrefabButton =
+            rootVisualElement.Q<Button>(
+                "build-prefab-button"
+            );
+
+        if (buildPrefabButton != null)
+        {
+            buildPrefabButton.clicked +=
+                OpenBuildPrefabWindow;
+        }
+
         LoadCellTypeDefinitions();
 
-        ui.SetStatus("Ready");
+        ui.SetStatus(
+            "Ready"
+        );
+    }
+
+    private void OpenBuildPrefabWindow()
+    {
+        if (
+            context == null ||
+            context.CurrentRoom == null)
+        {
+            ui?.SetStatus(
+                "Create or load a Room before building a prefab."
+            );
+
+            return;
+        }
+
+        RoomPrefabBuildWindow.Open(
+            context.CurrentRoom
+        );
     }
 
     private void LoadCellTypeDefinitions()
@@ -95,7 +142,9 @@ public sealed class RoomEditorWindow : EditorWindow
         foreach (string guid in guids)
         {
             string path =
-                AssetDatabase.GUIDToAssetPath(guid);
+                AssetDatabase.GUIDToAssetPath(
+                    guid
+                );
 
             CellTypeDefinition definition =
                 AssetDatabase.LoadAssetAtPath<CellTypeDefinition>(
@@ -103,7 +152,11 @@ public sealed class RoomEditorWindow : EditorWindow
                 );
 
             if (definition != null)
-                definitions.Add(definition);
+            {
+                definitions.Add(
+                    definition
+                );
+            }
         }
 
         definitions.Sort(
@@ -140,15 +193,36 @@ public sealed class RoomEditorWindow : EditorWindow
 
     private void DisposeEditor()
     {
+        if (buildPrefabButton != null)
+        {
+            buildPrefabButton.clicked -=
+                OpenBuildPrefabWindow;
+
+            buildPrefabButton =
+                null;
+        }
+
+        previewController?.Dispose();
+
+        previewController =
+            null;
+
         controller?.Dispose();
-        controller = null;
+
+        controller =
+            null;
 
         inputHandler?.Unbind();
-        inputHandler = null;
+
+        inputHandler =
+            null;
 
         ui?.Dispose();
-        ui = null;
 
-        context = null;
+        ui =
+            null;
+
+        context =
+            null;
     }
 }

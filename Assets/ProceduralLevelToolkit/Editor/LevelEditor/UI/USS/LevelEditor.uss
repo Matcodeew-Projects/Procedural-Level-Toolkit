@@ -1,0 +1,47 @@
+.level-editor { flex-grow: 1; flex-direction: column; min-height: 0; }
+.level-editor__toolbar { min-height: 42px; flex-direction: row; align-items: center; padding-left: 8px; padding-right: 8px; border-bottom-width: 1px; border-bottom-color: rgba(128,128,128,0.35); }
+
+.level-mode-toolbar { height: 34px; flex-shrink: 0; flex-direction: row; align-items: flex-end; padding-left: 8px; border-bottom-width: 1px; border-bottom-color: rgba(128,128,128,0.25); }
+.level-mode-tab { min-width: 100px; height: 29px; margin-right: 3px; border-bottom-width: 2px; border-bottom-color: rgba(0,0,0,0); }
+.level-mode-tab--active { -unity-font-style: bold; border-bottom-color: rgb(70,145,230); }
+
+.level-pages { flex-grow: 1; min-height: 0; }
+.level-page { flex-grow: 1; min-height: 0; }
+.level-editor__body { flex-grow: 1; flex-direction: row; min-height: 0; }
+.level-editor__library { width: 220px; min-width: 170px; border-right-width: 1px; border-right-color: rgba(128,128,128,0.35); }
+.level-editor__graph { flex-grow: 1; min-width: 0; }
+.level-editor__inspector { width: 270px; min-width: 220px; border-left-width: 1px; border-left-color: rgba(128,128,128,0.35); }
+
+.level-panel { flex-grow: 1; min-height: 0; }
+.level-panel__header { height: 36px; flex-shrink: 0; flex-direction: row; align-items: center; padding-left: 8px; padding-right: 8px; -unity-font-style: bold; border-bottom-width: 1px; border-bottom-color: rgba(128,128,128,0.25); }
+.level-panel__content { flex-grow: 1; min-height: 0; padding: 8px; }
+
+.level-library-search { margin-bottom: 8px; }
+.level-library-row { flex-direction: row; align-items: center; min-height: 30px; margin-bottom: 3px; padding-left: 6px; }
+.level-library-row__name { flex-grow: 1; }
+.level-library-row__add { width: 26px; height: 24px; }
+
+.level-graph-toolbar { min-height: 30px; flex-direction: row; align-items: center; padding-left: 6px; padding-right: 6px; border-bottom-width: 1px; border-bottom-color: rgba(128,128,128,0.2); }
+.level-graph-scroll { flex-grow: 1; }
+.level-graph-canvas { position: relative; width: 2400px; height: 1600px; }
+.level-node { position: absolute; width: 180px; height: 72px; padding: 6px; border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; border-top-left-radius: 4px; border-top-right-radius: 4px; border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; border-left-color: rgba(140,140,140,0.65); border-right-color: rgba(140,140,140,0.65); border-top-color: rgba(140,140,140,0.65); border-bottom-color: rgba(140,140,140,0.65); background-color: rgba(65,65,65,0.95); }
+.level-node:hover { border-left-color: rgba(190,190,190,0.95); border-right-color: rgba(190,190,190,0.95); border-top-color: rgba(190,190,190,0.95); border-bottom-color: rgba(190,190,190,0.95); }
+.level-node--selected { border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px; border-left-color: rgb(70,145,230); border-right-color: rgb(70,145,230); border-top-color: rgb(70,145,230); border-bottom-color: rgb(70,145,230); }
+.level-node__title { -unity-font-style: bold; font-size: 12px; }
+.level-node__id { font-size: 9px; opacity: 0.55; }
+
+.level-inspector-section { margin-bottom: 14px; }
+.level-inspector-title { -unity-font-style: bold; margin-bottom: 6px; }
+.level-inspector-connection { flex-direction: row; align-items: center; min-height: 28px; margin-bottom: 3px; }
+.level-inspector-connection Label { flex-grow: 1; }
+.level-danger-button { margin-top: 12px; }
+
+.level-layout-host { flex-grow: 1; min-height: 0; }
+.level-layout { flex-grow: 1; min-height: 0; }
+.level-layout__toolbar { height: 42px; flex-shrink: 0; flex-direction: row; align-items: center; padding-left: 8px; padding-right: 8px; border-bottom-width: 1px; border-bottom-color: rgba(128,128,128,0.25); }
+.level-layout__toolbar > * { margin-right: 6px; }
+.level-layout__state { margin-left: 8px; -unity-font-style: bold; }
+.level-layout__body { flex-grow: 1; min-height: 0; flex-direction: row; }
+.level-layout__report { width: 310px; min-width: 240px; padding: 10px; border-left-width: 1px; border-left-color: rgba(128,128,128,0.3); }
+.level-layout__report-title { -unity-font-style: bold; margin-top: 10px; margin-bottom: 5px; }
+.layout-preview-toolbar { height: 34px; flex-shrink: 0; flex-direction: row; align-items: center; padding-left: 6px; padding-right: 6px; border-bottom-width: 1px; border-bottom-color: rgba(128,128,128,0.2); }

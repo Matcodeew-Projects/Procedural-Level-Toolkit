@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="level-editor-root" class="level-editor">
+        <ui:VisualElement name="level-toolbar-host" class="level-editor__toolbar" />
+        <ui:VisualElement name="level-mode-toolbar-host" class="level-mode-toolbar" />
+
+        <ui:VisualElement name="level-pages" class="level-pages">
+            <ui:VisualElement name="level-structure-page" class="level-page">
+                <ui:VisualElement name="level-structure-body" class="level-editor__body">
+                    <ui:VisualElement name="room-library-host" class="level-editor__library" />
+                    <ui:VisualElement name="level-graph-host" class="level-editor__graph" />
+                    <ui:VisualElement name="level-inspector-host" class="level-editor__inspector" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement name="level-layout-page" class="level-page">
+                <ui:VisualElement name="level-layout-host" class="level-layout-host" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

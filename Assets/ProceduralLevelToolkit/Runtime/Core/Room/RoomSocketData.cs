@@ -28,6 +28,11 @@ public sealed class RoomSocketData
     [SerializeField]
     private List<string> tags = new();
 
+    [SerializeField]
+    private string displayName;
+
+    public string DisplayName =>
+        displayName;
 
     public string Id => id;
 
@@ -202,5 +207,14 @@ public sealed class RoomSocketData
                 );
             }
         }
+    }
+
+    public void SetDisplayName(
+    string value
+)
+    {
+        displayName =
+            value?.Trim()
+            ?? string.Empty;
     }
 }

@@ -7,23 +7,39 @@ public sealed class RoomEditorWindow
     : EditorWindow
 {
     private RoomEditorContext context;
+
     private RoomEditorUI ui;
+
     private RoomEditorInputHandler inputHandler;
+
     private RoomEditorController controller;
+
     private RoomPreviewController previewController;
+
+
+    private VisualElement roomEditorRoot;
 
     private Button buildPrefabButton;
 
-    [MenuItem("Procedural Level Toolkit/Room Editor")]
+
+    // =========================================================
+    // Open
+    // =========================================================
+
+    [MenuItem(
+        "Procedural Level Toolkit/Open Toolkit"
+    )]
     public static void Open()
     {
         RoomEditorWindow window =
             GetWindow<RoomEditorWindow>();
 
+
         window.titleContent =
             new GUIContent(
-                "Room Editor"
+                "Procedural Level Toolkit"
             );
+
 
         window.minSize =
             new Vector2(
@@ -32,46 +48,110 @@ public sealed class RoomEditorWindow
             );
     }
 
+
+    // =========================================================
+    // GUI
+    // =========================================================
+
     public void CreateGUI()
     {
         DisposeEditor();
 
+
         rootVisualElement.Clear();
 
+
+        // =====================================================
+        // Load Room Editor UXML
+        // =====================================================
+
         VisualTreeAsset template =
-            AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
-                RoomEditorUIPaths.RoomEditorUxml
-            );
+            AssetDatabase
+                .LoadAssetAtPath<VisualTreeAsset>(
+                    RoomEditorUIPaths
+                        .RoomEditorUxml
+                );
+
 
         if (template == null)
         {
             rootVisualElement.Add(
                 new HelpBox(
-                    $"RoomEditor.uxml introuvable :\n{RoomEditorUIPaths.RoomEditorUxml}",
+                    $"RoomEditor.uxml introuvable :\n" +
+                    RoomEditorUIPaths.RoomEditorUxml,
                     HelpBoxMessageType.Error
                 )
             );
 
+
             return;
         }
 
+
+        // =====================================================
+        // Room Editor Page Root
+        // =====================================================
+        //
+        // IMPORTANT :
+        //
+        // rootVisualElement
+        //      = racine de toute la fenêtre
+        //
+        // roomEditorRoot
+        //      = contenu de la page Room Editor
+        //
+        // Ils ne doivent surtout pas être le même élément.
+        // =====================================================
+
+        roomEditorRoot =
+            new VisualElement
+            {
+                name =
+                    "room-editor-page-root"
+            };
+
+
+        roomEditorRoot.style.flexGrow =
+            1f;
+
+
         template.CloneTree(
-            rootVisualElement
+            roomEditorRoot
         );
+
+
+        // =====================================================
+        // Context
+        // =====================================================
 
         context =
             new RoomEditorContext();
 
+
+        // =====================================================
+        // UI
+        // =====================================================
+
         ui =
             new RoomEditorUI(
-                rootVisualElement,
+                roomEditorRoot,
                 context
             );
+
+
+        // =====================================================
+        // Input
+        // =====================================================
 
         inputHandler =
             new RoomEditorInputHandler(
                 context
             );
+
+
+        // =====================================================
+        // Controller
+        // =====================================================
 
         controller =
             new RoomEditorController(
@@ -79,24 +159,41 @@ public sealed class RoomEditorWindow
                 ui
             );
 
+
+        // =====================================================
+        // Preview
+        // =====================================================
+
         previewController =
             new RoomPreviewController(
                 context,
                 ui.Preview
             );
 
+
+        // =====================================================
+        // Input Binding
+        // =====================================================
+
         inputHandler.Bind(
             ui.GridCanvas
         );
+
 
         controller.BindInput(
             inputHandler
         );
 
+
+        // =====================================================
+        // Build Prefab Button
+        // =====================================================
+
         buildPrefabButton =
-            rootVisualElement.Q<Button>(
+            roomEditorRoot.Q<Button>(
                 "build-prefab-button"
             );
+
 
         if (buildPrefabButton != null)
         {
@@ -104,30 +201,75 @@ public sealed class RoomEditorWindow
                 OpenBuildPrefabWindow;
         }
 
+
+        // =====================================================
+        // Definitions
+        // =====================================================
+
         LoadCellTypeDefinitions();
+
+
+        // =====================================================
+        // Status
+        // =====================================================
 
         ui.SetStatus(
             "Ready"
         );
+
+
+        // =====================================================
+        // Toolkit Shell
+        // =====================================================
+        //
+        // rootVisualElement :
+        //     fenêtre complète
+        //
+        // roomEditorRoot :
+        //     page Room Editor uniquement
+        //
+        // LevelEditorBootstrap va ajouter :
+        //
+        // ToolkitShell
+        // ├── Room Editor
+        // └── Level Editor
+        //
+        // =====================================================
+
+        LevelEditorBootstrap.Attach(
+            rootVisualElement,
+            roomEditorRoot
+        );
     }
+
+
+    // =========================================================
+    // Build Prefab
+    // =========================================================
 
     private void OpenBuildPrefabWindow()
     {
-        if (
-            context == null ||
+        if (context == null ||
             context.CurrentRoom == null)
         {
             ui?.SetStatus(
                 "Create or load a Room before building a prefab."
             );
 
+
             return;
         }
+
 
         RoomPrefabBuildWindow.Open(
             context.CurrentRoom
         );
     }
+
+
+    // =========================================================
+    // Cell Types
+    // =========================================================
 
     private void LoadCellTypeDefinitions()
     {
@@ -136,8 +278,10 @@ public sealed class RoomEditorWindow
                 "t:CellTypeDefinition"
             );
 
+
         List<CellTypeDefinition> definitions =
-            new();
+            new List<CellTypeDefinition>();
+
 
         foreach (string guid in guids)
         {
@@ -146,10 +290,15 @@ public sealed class RoomEditorWindow
                     guid
                 );
 
+
             CellTypeDefinition definition =
-                AssetDatabase.LoadAssetAtPath<CellTypeDefinition>(
-                    path
-                );
+                AssetDatabase
+                    .LoadAssetAtPath<
+                        CellTypeDefinition
+                    >(
+                        path
+                    );
+
 
             if (definition != null)
             {
@@ -159,25 +308,32 @@ public sealed class RoomEditorWindow
             }
         }
 
+
         definitions.Sort(
-            (a, b) =>
+            (
+                a,
+                b
+            ) =>
                 string.Compare(
                     a.DisplayName,
                     b.DisplayName,
-                    System.StringComparison.OrdinalIgnoreCase
+                    System.StringComparison
+                        .OrdinalIgnoreCase
                 )
         );
+
 
         ui.ToolPalette.SetCellTypes(
             definitions
         );
 
+
         ui.Inspector.SetCellTypes(
             definitions
         );
 
-        if (
-            definitions.Count > 0 &&
+
+        if (definitions.Count > 0 &&
             context.CurrentCellType == null)
         {
             context.SetCurrentCellType(
@@ -186,10 +342,20 @@ public sealed class RoomEditorWindow
         }
     }
 
+
+    // =========================================================
+    // Unity Lifecycle
+    // =========================================================
+
     private void OnDisable()
     {
         DisposeEditor();
     }
+
+
+    // =========================================================
+    // Dispose
+    // =========================================================
 
     private void DisposeEditor()
     {
@@ -198,31 +364,41 @@ public sealed class RoomEditorWindow
             buildPrefabButton.clicked -=
                 OpenBuildPrefabWindow;
 
+
             buildPrefabButton =
                 null;
         }
+
 
         previewController?.Dispose();
 
         previewController =
             null;
 
+
         controller?.Dispose();
 
         controller =
             null;
+
 
         inputHandler?.Unbind();
 
         inputHandler =
             null;
 
+
         ui?.Dispose();
 
         ui =
             null;
 
+
         context =
+            null;
+
+
+        roomEditorRoot =
             null;
     }
 }

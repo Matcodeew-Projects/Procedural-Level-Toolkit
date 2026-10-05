@@ -1,0 +1,173 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b4fc0ac7f61a8341a0fa9776f88d717, type: 3}
+  m_Name: Level1
+  m_EditorClassIdentifier: Matcodeew.MazeToolkit.Runtime::LevelDefinition
+  id: 7597d0a6917c49569e9d0e1fc7827e00
+  levelName: Level1
+  description: 
+  graph:
+    nodes:
+    - id: 3c64a952e23649d9a80d613d41ca1595
+      module: {fileID: 11400000, guid: a29f2282eb8f01d4ca8e129b41b2d094, type: 2}
+      room: {fileID: 11400000, guid: c0f4a394fc541814bbd4b4fbebb73274, type: 2}
+      graphPosition: {x: 478, y: 221}
+    - id: 524234367fa644d089309c40163ceac9
+      module: {fileID: 11400000, guid: d410ec4baaab4f246b0db094bed4f79c, type: 2}
+      room: {fileID: 11400000, guid: a60639ca33d489e4ebb6bcff2a6050ac, type: 2}
+      graphPosition: {x: 805, y: 229}
+    - id: ea6d4d2af4ab457e826e1d7578a8c865
+      module: {fileID: 11400000, guid: a29f2282eb8f01d4ca8e129b41b2d094, type: 2}
+      room: {fileID: 11400000, guid: c0f4a394fc541814bbd4b4fbebb73274, type: 2}
+      graphPosition: {x: 465, y: 112}
+    - id: 3f514c60a2144e22814f5783e5704864
+      module: {fileID: 11400000, guid: a29f2282eb8f01d4ca8e129b41b2d094, type: 2}
+      room: {fileID: 11400000, guid: c0f4a394fc541814bbd4b4fbebb73274, type: 2}
+      graphPosition: {x: 580, y: 349}
+    - id: b196c59a913b440dbb2589a3109a4e24
+      module: {fileID: 11400000, guid: a29f2282eb8f01d4ca8e129b41b2d094, type: 2}
+      room: {fileID: 11400000, guid: c0f4a394fc541814bbd4b4fbebb73274, type: 2}
+      graphPosition: {x: 1016, y: 219}
+    - id: 0e31497a163d4f54b783763f92c16b3a
+      module: {fileID: 11400000, guid: a29f2282eb8f01d4ca8e129b41b2d094, type: 2}
+      room: {fileID: 11400000, guid: c0f4a394fc541814bbd4b4fbebb73274, type: 2}
+      graphPosition: {x: 1339, y: 227}
+    - id: a8dddee77e7c438b97689be0d449cf55
+      module: {fileID: 11400000, guid: d410ec4baaab4f246b0db094bed4f79c, type: 2}
+      room: {fileID: 11400000, guid: a60639ca33d489e4ebb6bcff2a6050ac, type: 2}
+      graphPosition: {x: 1548, y: 203}
+    - id: 6b75f4155d3043239614bc33dc2321a3
+      module: {fileID: 11400000, guid: d410ec4baaab4f246b0db094bed4f79c, type: 2}
+      room: {fileID: 11400000, guid: a60639ca33d489e4ebb6bcff2a6050ac, type: 2}
+      graphPosition: {x: 180, y: 213}
+    connections:
+    - id: ae9d55db69394670b66242847d7962c8
+      fromNodeId: 3c64a952e23649d9a80d613d41ca1595
+      toNodeId: 524234367fa644d089309c40163ceac9
+      fromSocketId: 4936eea5488446fe95e3724434d57c21
+      toSocketId: d96d1cece3834beea288bc0551196552
+    - id: 05630ec7141e4c38a3022b31d71fc912
+      fromNodeId: ea6d4d2af4ab457e826e1d7578a8c865
+      toNodeId: 524234367fa644d089309c40163ceac9
+      fromSocketId: 4936eea5488446fe95e3724434d57c21
+      toSocketId: 31c4ad1550624c93baa7e00b68afce80
+    - id: 8e1c6c9fadf5465d9a6a8d69907b7d0b
+      fromNodeId: 3f514c60a2144e22814f5783e5704864
+      toNodeId: 524234367fa644d089309c40163ceac9
+      fromSocketId: 4936eea5488446fe95e3724434d57c21
+      toSocketId: def96df9ba3246b89209363a3ca54fed
+    - id: 47fee442bace47eab0643e7a0b9083cb
+      fromNodeId: b196c59a913b440dbb2589a3109a4e24
+      toNodeId: 0e31497a163d4f54b783763f92c16b3a
+      fromSocketId: 4936eea5488446fe95e3724434d57c21
+      toSocketId: 4936eea5488446fe95e3724434d57c21
+    - id: 4023b4a39676447b90a1cb867ee6abf4
+      fromNodeId: 524234367fa644d089309c40163ceac9
+      toNodeId: b196c59a913b440dbb2589a3109a4e24
+      fromSocketId: 1b650673985547c6a7b45c8df9310496
+      toSocketId: 7a233b38378a44d7bd893cc2c5af5eb2
+    - id: 2b5ef4075cc9404d91e5310a81f3ad16
+      fromNodeId: 0e31497a163d4f54b783763f92c16b3a
+      toNodeId: a8dddee77e7c438b97689be0d449cf55
+      fromSocketId: 7a233b38378a44d7bd893cc2c5af5eb2
+      toSocketId: d96d1cece3834beea288bc0551196552
+    - id: 29772c8e40464ecdac396709296daf16
+      fromNodeId: 6b75f4155d3043239614bc33dc2321a3
+      toNodeId: 3c64a952e23649d9a80d613d41ca1595
+      fromSocketId: 31c4ad1550624c93baa7e00b68afce80
+      toSocketId: 7a233b38378a44d7bd893cc2c5af5eb2
+  spatialLayout:
+    isSolved: 1
+    modules:
+    - nodeId: 3c64a952e23649d9a80d613d41ca1595
+      room: {fileID: 11400000, guid: c0f4a394fc541814bbd4b4fbebb73274, type: 2}
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      quarterTurns: 0
+    - nodeId: 524234367fa644d089309c40163ceac9
+      room: {fileID: 11400000, guid: a60639ca33d489e4ebb6bcff2a6050ac, type: 2}
+      position: {x: -0.5, y: 0, z: 22.5}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      quarterTurns: 0
+    - nodeId: 6b75f4155d3043239614bc33dc2321a3
+      room: {fileID: 11400000, guid: a60639ca33d489e4ebb6bcff2a6050ac, type: 2}
+      position: {x: -0.5, y: 0, z: -22.5}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      quarterTurns: 0
+    - nodeId: ea6d4d2af4ab457e826e1d7578a8c865
+      room: {fileID: 11400000, guid: c0f4a394fc541814bbd4b4fbebb73274, type: 2}
+      position: {x: -1, y: 0, z: 45}
+      rotation: {x: 0, y: 1, z: 0, w: -0.00000004371139}
+      quarterTurns: 2
+    - nodeId: 3f514c60a2144e22814f5783e5704864
+      room: {fileID: 11400000, guid: c0f4a394fc541814bbd4b4fbebb73274, type: 2}
+      position: {x: -23, y: 0, z: 21}
+      rotation: {x: 0, y: 0.70710677, z: 0, w: 0.70710677}
+      quarterTurns: 1
+    - nodeId: b196c59a913b440dbb2589a3109a4e24
+      room: {fileID: 11400000, guid: c0f4a394fc541814bbd4b4fbebb73274, type: 2}
+      position: {x: 22, y: 0, z: 21}
+      rotation: {x: 0, y: 0.70710677, z: 0, w: 0.70710677}
+      quarterTurns: 1
+    - nodeId: 0e31497a163d4f54b783763f92c16b3a
+      room: {fileID: 11400000, guid: c0f4a394fc541814bbd4b4fbebb73274, type: 2}
+      position: {x: 42, y: 0, z: 22}
+      rotation: {x: 0, y: 0.70710677, z: 0, w: -0.70710677}
+      quarterTurns: 3
+    - nodeId: a8dddee77e7c438b97689be0d449cf55
+      room: {fileID: 11400000, guid: a60639ca33d489e4ebb6bcff2a6050ac, type: 2}
+      position: {x: 64.5, y: 0, z: 21.5}
+      rotation: {x: 0, y: 0.70710677, z: 0, w: 0.70710677}
+      quarterTurns: 1
+    socketConnections:
+    - graphConnectionId: ae9d55db69394670b66242847d7962c8
+      fromNodeId: 3c64a952e23649d9a80d613d41ca1595
+      fromSocketId: 4936eea5488446fe95e3724434d57c21
+      toNodeId: 524234367fa644d089309c40163ceac9
+      toSocketId: d96d1cece3834beea288bc0551196552
+      worldPosition: {x: -0.5, y: 0, z: 10}
+    - graphConnectionId: 05630ec7141e4c38a3022b31d71fc912
+      fromNodeId: ea6d4d2af4ab457e826e1d7578a8c865
+      fromSocketId: 4936eea5488446fe95e3724434d57c21
+      toNodeId: 524234367fa644d089309c40163ceac9
+      toSocketId: 31c4ad1550624c93baa7e00b68afce80
+      worldPosition: {x: -0.5, y: 0, z: 35}
+    - graphConnectionId: 8e1c6c9fadf5465d9a6a8d69907b7d0b
+      fromNodeId: 3f514c60a2144e22814f5783e5704864
+      fromSocketId: 4936eea5488446fe95e3724434d57c21
+      toNodeId: 524234367fa644d089309c40163ceac9
+      toSocketId: def96df9ba3246b89209363a3ca54fed
+      worldPosition: {x: -13, y: 0, z: 21.5}
+    - graphConnectionId: 47fee442bace47eab0643e7a0b9083cb
+      fromNodeId: b196c59a913b440dbb2589a3109a4e24
+      fromSocketId: 4936eea5488446fe95e3724434d57c21
+      toNodeId: 0e31497a163d4f54b783763f92c16b3a
+      toSocketId: 4936eea5488446fe95e3724434d57c21
+      worldPosition: {x: 32, y: 0, z: 21.5}
+    - graphConnectionId: 4023b4a39676447b90a1cb867ee6abf4
+      fromNodeId: 524234367fa644d089309c40163ceac9
+      fromSocketId: 1b650673985547c6a7b45c8df9310496
+      toNodeId: b196c59a913b440dbb2589a3109a4e24
+      toSocketId: 7a233b38378a44d7bd893cc2c5af5eb2
+      worldPosition: {x: 12, y: 0, z: 21.5}
+    - graphConnectionId: 2b5ef4075cc9404d91e5310a81f3ad16
+      fromNodeId: 0e31497a163d4f54b783763f92c16b3a
+      fromSocketId: 7a233b38378a44d7bd893cc2c5af5eb2
+      toNodeId: a8dddee77e7c438b97689be0d449cf55
+      toSocketId: d96d1cece3834beea288bc0551196552
+      worldPosition: {x: 52, y: 0, z: 21.5}
+    - graphConnectionId: 29772c8e40464ecdac396709296daf16
+      fromNodeId: 6b75f4155d3043239614bc33dc2321a3
+      fromSocketId: 31c4ad1550624c93baa7e00b68afce80
+      toNodeId: 3c64a952e23649d9a80d613d41ca1595
+      toSocketId: 7a233b38378a44d7bd893cc2c5af5eb2
+      worldPosition: {x: -0.5, y: 0, z: -10}

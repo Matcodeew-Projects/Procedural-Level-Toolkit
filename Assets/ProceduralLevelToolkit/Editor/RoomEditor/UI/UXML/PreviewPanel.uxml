@@ -1,0 +1,19 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:VisualElement name="preview-panel" class="panel panel--grow" style="flex-grow: 1; min-height: 220px;">
+        <ui:VisualElement class="panel__header">
+            <ui:Label text="3D Preview" class="panel__title"/>
+            <ui:VisualElement style="flex-grow: 1;"/>
+            <ui:Button name="preview-fit-button" text="Fit" tooltip="Frame the generated Room" class="button button--compact"/>
+        </ui:VisualElement>
+        <ui:VisualElement class="panel__body" style="flex-grow: 1;">
+            <editor:ObjectField name="preview-settings-field" label="Generation" allow-scene-objects="false" style="margin-bottom: 6px;"/>
+            <ui:VisualElement name="preview-host" style="flex-grow: 1; min-height: 300px; background-color: rgb(26, 27, 30); border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; border-left-color: rgb(55, 55, 55); border-right-color: rgb(55, 55, 55); border-top-color: rgb(55, 55, 55); border-bottom-color: rgb(55, 55, 55);"/>
+            <ui:Label name="preview-status-label" text="Select generation settings." class="text-muted" style="white-space: normal; margin-top: 5px; margin-bottom: 5px;"/>
+            <ui:VisualElement style="flex-direction: row; align-items: center;">
+                <ui:Toggle name="preview-auto-refresh-toggle" label="Auto" value="true" tooltip="Refresh when Room content changes" style="width: 82px;"/>
+                <ui:Button name="preview-refresh-button" text="Refresh" class="button button--compact" style="flex-grow: 1;"/>
+                <ui:Button name="preview-build-button" text="Build Prefab" class="button button--compact button--primary" style="flex-grow: 1; margin-left: 4px;"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

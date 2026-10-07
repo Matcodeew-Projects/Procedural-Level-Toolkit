@@ -1,0 +1,267 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3cc5928a367010c4893095b77597f493, type: 3}
+  m_Name: Corridor_I
+  m_EditorClassIdentifier: Matcodeew.ProceduralLevelToolkit.Runtime::RoomDefinition
+  width: 5
+  height: 11
+  layers:
+  - id: 4bb82db2711641d79bd9c19396d10093
+    displayName: Base
+    definition: {fileID: 0}
+    visible: 1
+    locked: 0
+    cells:
+    - type: {fileID: 11400000, guid: 6466188a7713aec49814da0542944818, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 6466188a7713aec49814da0542944818, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 6466188a7713aec49814da0542944818, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 6466188a7713aec49814da0542944818, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 6466188a7713aec49814da0542944818, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 6466188a7713aec49814da0542944818, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 6466188a7713aec49814da0542944818, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 6466188a7713aec49814da0542944818, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 6466188a7713aec49814da0542944818, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 6466188a7713aec49814da0542944818, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 6466188a7713aec49814da0542944818, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 6466188a7713aec49814da0542944818, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 6466188a7713aec49814da0542944818, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 6466188a7713aec49814da0542944818, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 6466188a7713aec49814da0542944818, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 6466188a7713aec49814da0542944818, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 6466188a7713aec49814da0542944818, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 6466188a7713aec49814da0542944818, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 6466188a7713aec49814da0542944818, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 6466188a7713aec49814da0542944818, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 6466188a7713aec49814da0542944818, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+      enabled: 1
+    - type: {fileID: 11400000, guid: 6466188a7713aec49814da0542944818, type: 2}
+      enabled: 1
+  - id: 4c1175a1dc2a43fdb358aac29fc2a8a2
+    displayName: Socket
+    definition: {fileID: 0}
+    visible: 1
+    locked: 0
+    cells:
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+    - type: {fileID: 0}
+      enabled: 1
+  groups: []
+  sockets:
+  - id: 72caa2ea52e34f02be4743d8a3f10c47
+    position: {x: 2, y: 0}
+    direction: 0
+    role: 0
+    type: Default
+    width: 1
+    tags: []
+    displayName: 
+  - id: 17867d820cd94de5b8044afa444de26e
+    position: {x: 2, y: 10}
+    direction: 2
+    role: 0
+    type: Default
+    width: 1
+    tags: []
+    displayName: 

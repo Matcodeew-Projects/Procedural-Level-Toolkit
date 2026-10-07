@@ -1,0 +1,36 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         editor-extension-mode="True">
+
+    <ui:VisualElement name="tool-palette-panel" class="panel">
+        <ui:VisualElement class="panel__header">
+            <ui:Label text="Tools" class="panel__title" />
+            <ui:Label name="active-tool-label" text="Select" class="panel__meta" />
+        </ui:VisualElement>
+
+        <ui:VisualElement class="panel__body">
+            <ui:VisualElement name="tool-buttons" class="tool-grid">
+                <ui:Button name="select-tool-button" text="Select" class="tool-button tool-button--active" />
+                <ui:Button name="paint-tool-button" text="Paint" class="tool-button" />
+                <ui:Button name="erase-tool-button" text="Erase" class="tool-button" />
+                <ui:Button name="fill-tool-button" text="Fill" class="tool-button" />
+                <ui:Button name="group-tool-button" text="Group" class="tool-button" />
+                <ui:Button name="socket-tool-button" text="Socket" class="tool-button" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="section-divider" />
+
+            <ui:Label text="Cell Type" class="section-title" />
+            <ui:ScrollView name="cell-type-list" class="cell-type-list">
+                <ui:Label name="cell-type-list-placeholder"
+                          text="CellTypeDefinition entries will appear here."
+                          class="text-muted text-small" />
+            </ui:ScrollView>
+
+            <ui:VisualElement class="section-divider" />
+
+            <ui:IntegerField name="brush-size-field" label="Brush Size" value="1" class="field" />
+            <ui:Toggle name="continuous-paint-toggle" label="Continuous Paint" value="true" class="field" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

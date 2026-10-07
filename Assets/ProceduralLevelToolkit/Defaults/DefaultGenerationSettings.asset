@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bed616c55c5d464ea814436ad6d403c, type: 3}
+  m_Name: DefaultGenerationSettings
+  m_EditorClassIdentifier: Matcodeew.ProceduralLevelToolkit.Runtime::RoomGenerationSettings
+  cellSize: 1
+  layerHeight: 0
+  centerRoomAtOrigin: 1
+  scaleSinglePrefabGroupsToFootprint: 1
+  generateSockets: 1
+  socketHeight: 0.5
+  cellMappings:
+  - cellType: {fileID: 11400000, guid: 31a2c0f77ebb0d44bbe2bfd09f1fbc6f, type: 2}
+    prefab: {fileID: 5301479059610463118, guid: 95742feaae9e1514bb5c4b5f0a96986f, type: 3}
+    enabled: 1
+    positionOffset: {x: 0, y: 1, z: 0}
+    rotationOffset: {x: 0, y: 0, z: 0}
+    scaleMultiplier: {x: 1, y: 1, z: 1}
+  - cellType: {fileID: 11400000, guid: df3da637dddf99b4a9c8e01f9e143606, type: 2}
+    prefab: {fileID: 5301479059610463118, guid: cd056e98c0b8de2489241681b5c310f5, type: 3}
+    enabled: 1
+    positionOffset: {x: 0, y: 1, z: 0}
+    rotationOffset: {x: 0, y: 0, z: 0}
+    scaleMultiplier: {x: 1, y: 1, z: 1}
+  - cellType: {fileID: 11400000, guid: 05cb291e359282b43a150fdd52ac44d2, type: 2}
+    prefab: {fileID: 5301479059610463118, guid: 1b307dfd0db8bac4499da246b288fe8d, type: 3}
+    enabled: 1
+    positionOffset: {x: 0, y: 1, z: 0}
+    rotationOffset: {x: 0, y: 0, z: 0}
+    scaleMultiplier: {x: 1, y: 1, z: 1}
+  - cellType: {fileID: 11400000, guid: 3ba96325b49b7144baf73b670762c20c, type: 2}
+    prefab: {fileID: 5301479059610463118, guid: c12791569bc7656499c6c797cda490ce, type: 3}
+    enabled: 1
+    positionOffset: {x: 0, y: 1, z: 0}
+    rotationOffset: {x: 0, y: 0, z: 0}
+    scaleMultiplier: {x: 1, y: 1, z: 1}
+  - cellType: {fileID: 11400000, guid: 2baea11587e87df45addb04b470c3196, type: 2}
+    prefab: {fileID: 5301479059610463118, guid: 5b98ba33b4a9bb74282ec6bba58af943, type: 3}
+    enabled: 1
+    positionOffset: {x: 0, y: 0, z: 0}
+    rotationOffset: {x: 0, y: 0, z: 0}
+    scaleMultiplier: {x: 1, y: 1, z: 1}
+  - cellType: {fileID: 11400000, guid: 6466188a7713aec49814da0542944818, type: 2}
+    prefab: {fileID: 5301479059610463118, guid: ede55fa0f4e0fed4f86cfb4f69f89e46, type: 3}
+    enabled: 1
+    positionOffset: {x: 0, y: 0.5, z: 0}
+    rotationOffset: {x: 0, y: 0, z: 0}
+    scaleMultiplier: {x: 1, y: 2, z: 1}

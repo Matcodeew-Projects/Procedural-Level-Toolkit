@@ -1,0 +1,752 @@
+.level-editor {
+    flex-grow: 1;
+    flex-direction: column;
+    min-height: 0;
+    background-color: rgba(24, 25, 28, 0.25);
+}
+
+
+/* ========================================================= */
+/* Top Toolbar                                               */
+/* ========================================================= */
+
+.level-editor__toolbar {
+    min-height: 42px;
+    flex-direction: row;
+    align-items: center;
+
+    padding-left: 10px;
+    padding-right: 10px;
+
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(128, 128, 128, 0.28);
+}
+
+.level-mode-toolbar {
+    height: 34px;
+    flex-shrink: 0;
+
+    flex-direction: row;
+    align-items: flex-end;
+
+    padding-left: 8px;
+
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(128, 128, 128, 0.22);
+}
+
+.level-mode-tab {
+    min-width: 92px;
+    height: 29px;
+
+    margin-right: 4px;
+
+    border-bottom-width: 2px;
+    border-bottom-color: rgba(0, 0, 0, 0);
+}
+
+.level-mode-tab--active {
+    -unity-font-style: bold;
+    border-bottom-color: rgb(70, 145, 230);
+}
+
+
+/* ========================================================= */
+/* Pages / Split Views                                       */
+/* ========================================================= */
+
+.level-pages,
+.level-page,
+.level-layout-host,
+.level-layout,
+.level-build {
+    flex-grow: 1;
+    min-height: 0;
+}
+
+.level-structure-split,
+.level-layout__main-split,
+.level-layout__preview-split,
+.level-build__body {
+    flex-grow: 1;
+    min-height: 0;
+    min-width: 0;
+}
+
+.level-editor__library {
+    min-width: 210px;
+    min-height: 0;
+
+    background-color: rgba(28, 29, 32, 0.42);
+}
+
+.level-editor__graph {
+    flex-grow: 1;
+    min-width: 260px;
+    min-height: 0;
+}
+
+.level-editor__inspector {
+    min-width: 220px;
+    min-height: 0;
+
+    background-color: rgba(28, 29, 32, 0.42);
+}
+
+
+/* ========================================================= */
+/* Generic Panel                                             */
+/* ========================================================= */
+
+.level-panel {
+    flex-grow: 1;
+    min-width: 0;
+    min-height: 0;
+}
+
+.level-panel__header {
+    height: 38px;
+    flex-shrink: 0;
+
+    flex-direction: row;
+    align-items: center;
+
+    padding-left: 10px;
+    padding-right: 10px;
+
+    -unity-font-style: bold;
+
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(128, 128, 128, 0.20);
+}
+
+.level-panel__content {
+    flex-grow: 1;
+    min-width: 0;
+    min-height: 0;
+
+    padding: 10px;
+}
+
+
+/* ========================================================= */
+/* Room Module Library                                       */
+/* ========================================================= */
+
+.level-library-header {
+    min-height: 52px;
+    flex-shrink: 0;
+
+    flex-direction: row;
+    align-items: center;
+
+    padding-left: 12px;
+    padding-right: 8px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(128, 128, 128, 0.22);
+}
+
+.level-library-header__title {
+    -unity-font-style: bold;
+    font-size: 12px;
+}
+
+.level-library-header__subtitle {
+    margin-top: 2px;
+
+    font-size: 9px;
+    opacity: 0.55;
+}
+
+.level-library-refresh {
+    width: 28px;
+    height: 26px;
+}
+
+.level-library-content {
+    flex-grow: 1;
+    min-width: 0;
+    min-height: 0;
+
+    padding: 10px;
+}
+
+.level-library-search {
+    margin-bottom: 8px;
+}
+
+.level-module-create {
+    margin-top: 2px;
+    margin-bottom: 12px;
+
+    padding: 8px;
+
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+
+    border-left-color: rgba(128, 128, 128, 0.22);
+    border-right-color: rgba(128, 128, 128, 0.22);
+    border-top-color: rgba(128, 128, 128, 0.22);
+    border-bottom-color: rgba(128, 128, 128, 0.22);
+
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+
+    background-color: rgba(255, 255, 255, 0.025);
+}
+
+.level-module-create__help {
+    margin-top: 5px;
+    margin-bottom: 8px;
+
+    white-space: normal;
+    font-size: 10px;
+    opacity: 0.62;
+}
+
+.level-module-create__field {
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
+.level-module-create__button {
+    height: 28px;
+
+    margin-top: 8px;
+
+    -unity-font-style: bold;
+}
+
+.level-library-section-title {
+    margin-top: 2px;
+    margin-bottom: 5px;
+
+    font-size: 9px;
+    -unity-font-style: bold;
+    opacity: 0.55;
+}
+
+.level-library-list {
+    flex-grow: 1;
+    min-height: 0;
+}
+
+.level-library-row {
+    min-height: 48px;
+
+    flex-direction: row;
+    align-items: center;
+
+    margin-bottom: 5px;
+
+    padding-left: 8px;
+    padding-right: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+
+    border-left-color: rgba(128, 128, 128, 0.18);
+    border-right-color: rgba(128, 128, 128, 0.18);
+    border-top-color: rgba(128, 128, 128, 0.18);
+    border-bottom-color: rgba(128, 128, 128, 0.18);
+
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+
+    background-color: rgba(255, 255, 255, 0.018);
+}
+
+.level-library-row:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+.level-library-row__identity {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.level-library-row__name {
+    -unity-font-style: bold;
+}
+
+.level-library-row__meta {
+    margin-top: 2px;
+
+    font-size: 9px;
+    opacity: 0.52;
+}
+
+.level-library-row__ping {
+    min-width: 42px;
+    height: 24px;
+
+    margin-left: 5px;
+}
+
+.level-library-row__add {
+    width: 28px;
+    height: 24px;
+
+    margin-left: 3px;
+
+    -unity-font-style: bold;
+}
+
+.level-library-empty {
+    padding: 8px;
+
+    white-space: normal;
+    opacity: 0.55;
+}
+
+
+/* ========================================================= */
+/* Graph                                                     */
+/* ========================================================= */
+
+.level-graph-toolbar {
+    min-height: 34px;
+    flex-shrink: 0;
+
+    flex-direction: row;
+    align-items: center;
+
+    padding-left: 6px;
+    padding-right: 8px;
+
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(128, 128, 128, 0.16);
+
+    background-color: rgba(255, 255, 255, 0.012);
+}
+
+.level-graph-toolbar__zoom {
+    min-width: 64px;
+
+    margin-left: 6px;
+
+    -unity-font-style: bold;
+}
+
+.level-graph-toolbar__position {
+    min-width: 145px;
+
+    margin-right: 8px;
+
+    font-size: 9px;
+    opacity: 0.50;
+}
+
+.level-graph-toolbar__help {
+    flex-grow: 1;
+
+    font-size: 9px;
+    opacity: 0.48;
+}
+
+.level-graph-viewport {
+    flex-grow: 1;
+    min-width: 0;
+    min-height: 0;
+
+    background-color: rgba(20, 21, 24, 0.26);
+}
+
+.level-node {
+    position: absolute;
+
+    width: 180px;
+    height: 72px;
+
+    padding-left: 9px;
+    padding-right: 9px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+
+    border-left-color: rgba(140, 140, 140, 0.62);
+    border-right-color: rgba(140, 140, 140, 0.62);
+    border-top-color: rgba(140, 140, 140, 0.62);
+    border-bottom-color: rgba(140, 140, 140, 0.62);
+
+    background-color: rgba(55, 57, 62, 0.98);
+}
+
+.level-node:hover {
+    border-left-color: rgba(195, 195, 195, 0.95);
+    border-right-color: rgba(195, 195, 195, 0.95);
+    border-top-color: rgba(195, 195, 195, 0.95);
+    border-bottom-color: rgba(195, 195, 195, 0.95);
+
+    background-color: rgba(61, 64, 69, 0.98);
+}
+
+.level-node--selected {
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+
+    border-left-color: rgb(70, 145, 230);
+    border-right-color: rgb(70, 145, 230);
+    border-top-color: rgb(70, 145, 230);
+    border-bottom-color: rgb(70, 145, 230);
+}
+
+.level-node__title {
+    -unity-font-style: bold;
+    font-size: 12px;
+}
+
+.level-node__meta {
+    margin-top: 3px;
+
+    font-size: 10px;
+    opacity: 0.68;
+}
+
+.level-node__id {
+    margin-top: 1px;
+
+    font-size: 8px;
+    opacity: 0.36;
+}
+
+
+/* ========================================================= */
+/* Inspector                                                 */
+/* ========================================================= */
+
+.level-inspector-section {
+    margin-bottom: 14px;
+}
+
+.level-inspector-title {
+    margin-bottom: 6px;
+
+    -unity-font-style: bold;
+}
+
+.level-inspector-connection {
+    min-height: 28px;
+
+    flex-direction: row;
+    align-items: center;
+
+    margin-bottom: 3px;
+}
+
+.level-inspector-connection Label {
+    flex-grow: 1;
+}
+
+.level-danger-button {
+    margin-top: 12px;
+}
+
+
+/* ========================================================= */
+/* Layout                                                    */
+/* ========================================================= */
+
+.level-layout__toolbar {
+    min-height: 42px;
+    flex-shrink: 0;
+
+    flex-direction: row;
+    align-items: center;
+
+    padding-left: 8px;
+    padding-right: 8px;
+
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(128, 128, 128, 0.22);
+}
+
+.level-layout__toolbar > * {
+    margin-right: 6px;
+}
+
+.level-layout__state {
+    margin-left: 8px;
+
+    -unity-font-style: bold;
+}
+
+.level-layout-preview-panel {
+    flex-grow: 1;
+    min-width: 240px;
+    min-height: 0;
+
+    background-color: rgba(20, 21, 24, 0.20);
+}
+
+.level-layout-preview-panel__header {
+    height: 38px;
+    flex-shrink: 0;
+
+    padding-left: 10px;
+    padding-top: 5px;
+
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(128, 128, 128, 0.18);
+}
+
+.level-layout-preview-panel__title {
+    -unity-font-style: bold;
+    font-size: 11px;
+}
+
+.level-layout-preview-panel__subtitle {
+    margin-top: 1px;
+
+    font-size: 9px;
+    opacity: 0.48;
+}
+
+.level-layout__report {
+    min-width: 220px;
+    min-height: 0;
+
+    padding: 10px;
+
+    background-color: rgba(28, 29, 32, 0.42);
+}
+
+.level-layout__report-title {
+    margin-top: 10px;
+    margin-bottom: 5px;
+
+    -unity-font-style: bold;
+}
+
+.layout-preview-toolbar {
+    height: 34px;
+    flex-shrink: 0;
+
+    flex-direction: row;
+    align-items: center;
+
+    padding-left: 6px;
+    padding-right: 6px;
+
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(128, 128, 128, 0.14);
+}
+
+
+/* ========================================================= */
+/* Build & Validation                                        */
+/* ========================================================= */
+
+.level-build {
+    flex-grow: 1;
+    min-width: 0;
+    min-height: 0;
+}
+
+.level-build__header {
+    min-height: 76px;
+    flex-shrink: 0;
+
+    flex-direction: row;
+    align-items: center;
+
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(128, 128, 128, 0.22);
+
+    background-color: rgba(255, 255, 255, 0.018);
+}
+
+.level-build__title {
+    font-size: 14px;
+    -unity-font-style: bold;
+}
+
+.level-build__subtitle {
+    margin-top: 4px;
+
+    font-size: 10px;
+    opacity: 0.62;
+}
+
+.level-build__counters {
+    flex-direction: row;
+    align-items: center;
+}
+
+.level-build__counter {
+    min-width: 86px;
+
+    margin-left: 8px;
+    padding-left: 9px;
+    padding-right: 9px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+
+    -unity-text-align: middle-center;
+
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+
+    border-left-color: rgba(128, 128, 128, 0.22);
+    border-right-color: rgba(128, 128, 128, 0.22);
+    border-top-color: rgba(128, 128, 128, 0.22);
+    border-bottom-color: rgba(128, 128, 128, 0.22);
+
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.level-build__actions {
+    min-height: 48px;
+    flex-shrink: 0;
+
+    flex-direction: row;
+    align-items: center;
+
+    padding-left: 12px;
+    padding-right: 12px;
+
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(128, 128, 128, 0.16);
+}
+
+.level-build__actions > Button {
+    min-width: 120px;
+    margin-right: 6px;
+}
+
+.level-build__primary-button {
+    -unity-font-style: bold;
+}
+
+.level-build-card {
+    flex-grow: 1;
+    min-width: 260px;
+    min-height: 0;
+
+    padding: 14px;
+
+    background-color: rgba(28, 29, 32, 0.36);
+}
+
+.level-build-card__title {
+    margin-bottom: 3px;
+
+    font-size: 11px;
+    -unity-font-style: bold;
+}
+
+.level-build-card__subtitle {
+    margin-bottom: 14px;
+
+    font-size: 10px;
+    opacity: 0.56;
+}
+
+.level-build-card__detail {
+    margin-top: 7px;
+
+    font-size: 10px;
+    opacity: 0.72;
+}
+
+.level-build-card__hint {
+    margin-top: 16px;
+
+    padding: 9px;
+
+    font-size: 10px;
+    opacity: 0.58;
+
+    border-left-width: 2px;
+    border-left-color: rgba(70, 145, 230, 0.65);
+
+    background-color: rgba(70, 145, 230, 0.06);
+}
+
+.level-build__issues {
+    flex-grow: 1;
+    min-height: 0;
+}
+
+.level-build-issue {
+    min-height: 48px;
+
+    flex-direction: row;
+
+    margin-bottom: 6px;
+
+    padding-left: 9px;
+    padding-right: 9px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+
+    border-left-width: 2px;
+
+    background-color: rgba(255, 255, 255, 0.018);
+}
+
+.level-build-issue--error {
+    border-left-color: rgba(235, 75, 72, 0.9);
+}
+
+.level-build-issue--warning {
+    border-left-color: rgba(235, 180, 55, 0.9);
+}
+
+.level-build-issue--success {
+    padding: 10px;
+
+    opacity: 0.82;
+}
+
+.level-build-issue__symbol {
+    width: 24px;
+
+    font-size: 13px;
+    -unity-font-style: bold;
+}
+
+.level-build-issue__message {
+    white-space: normal;
+}
+
+.level-build-issue__code {
+    margin-top: 3px;
+
+    font-size: 8px;
+    opacity: 0.42;
+}

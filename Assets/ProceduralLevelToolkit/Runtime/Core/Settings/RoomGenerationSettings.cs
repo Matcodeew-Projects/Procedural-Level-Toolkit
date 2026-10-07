@@ -173,8 +173,34 @@ public sealed class RoomGenerationSettings
             CellSize;
 
 
+        // =====================================================
+        // Coordinate convention
+        // =====================================================
+        //
+        // Room Editor:
+        //
+        // (0,0) --------> +X
+        //   |
+        //   |
+        //   v
+        //  +Y
+        //
+        // Therefore:
+        //
+        // y = 0            -> North
+        // y = Height - 1   -> South
+        //
+        // Unity / Layout convention:
+        //
+        // North -> +Z
+        // South -> -Z
+        //
+        // Grid Y must therefore be inverted when converted
+        // into Unity Z.
+        // =====================================================
+
         float z =
-            gridPosition.y *
+            -gridPosition.y *
             CellSize;
 
 
@@ -193,7 +219,7 @@ public sealed class RoomGenerationSettings
                 0.5f;
 
 
-            z -=
+            z +=
                 (
                     room.Height -
                     1

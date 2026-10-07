@@ -9,7 +9,6 @@ public sealed class LevelEditorContext
     private LevelDefinition currentLevel;
     private LevelNodeData selectedNode;
     private LevelConnectionData selectedConnection;
-    private string layoutRootNodeId;
     private LayoutSolveResult lastSolveResult;
 
     public LevelDefinition CurrentLevel => currentLevel;
@@ -17,7 +16,7 @@ public sealed class LevelEditorContext
     public SpatialLayoutData SpatialLayout => currentLevel != null ? currentLevel.SpatialLayout : null;
     public LevelNodeData SelectedNode => selectedNode;
     public LevelConnectionData SelectedConnection => selectedConnection;
-    public string LayoutRootNodeId => layoutRootNodeId;
+    public string LayoutRootNodeId => currentLevel != null ? currentLevel.LayoutRootNodeId : null;
     public LayoutSolveResult LastSolveResult => lastSolveResult;
     public bool HasLevel => currentLevel != null;
 
@@ -64,9 +63,9 @@ public sealed class LevelEditorContext
         LevelNodeData node = currentLevel.Graph.AddNode(module, graphPosition);
         InvalidateSpatialLayout();
 
-        if (string.IsNullOrWhiteSpace(layoutRootNodeId))
+        if (string.IsNullOrWhiteSpace(currentLevel.LayoutRootNodeId))
         {
-            layoutRootNodeId = node.Id;
+            currentLevel.SetLayoutRootNodeId(node.Id);
             OnLayoutRootChanged?.Invoke();
         }
 
@@ -371,7 +370,6 @@ public sealed class LevelEditorContext
     {
         if (currentLevel == null)
         {
-            layoutRootNodeId = null;
             OnLayoutRootChanged?.Invoke();
             return;
         }
@@ -379,11 +377,19 @@ public sealed class LevelEditorContext
         if (string.IsNullOrWhiteSpace(nodeId) || currentLevel.Graph.FindNode(nodeId) == null)
             return;
 
-        if (layoutRootNodeId == nodeId)
+        if (currentLevel.LayoutRootNodeId == nodeId)
             return;
 
-        layoutRootNodeId = nodeId;
+        RecordUndo("Change Layout Root");
+
+        if (!currentLevel.SetLayoutRootNodeId(nodeId))
+            return;
+
+        InvalidateSpatialLayout();
+        MarkDirty();
+
         OnLayoutRootChanged?.Invoke();
+        OnLayoutChanged?.Invoke();
     }
 
     public LayoutSolveResult SolveLayout()
@@ -398,7 +404,7 @@ public sealed class LevelEditorContext
 
         NormalizeLayoutRoot();
         RecordUndo("Solve Level Layout");
-        lastSolveResult = layoutSolver.Solve(currentLevel, layoutRootNodeId);
+        lastSolveResult = layoutSolver.Solve(currentLevel, currentLevel.LayoutRootNodeId);
         MarkDirty();
         OnLayoutChanged?.Invoke();
         return lastSolveResult;
@@ -414,6 +420,18 @@ public sealed class LevelEditorContext
         lastSolveResult = null;
         MarkDirty();
         OnLayoutChanged?.Invoke();
+    }
+
+    public bool SaveCurrentLevel()
+    {
+        if (currentLevel == null)
+            return false;
+
+        currentLevel.EnsureIntegrity();
+        EditorUtility.SetDirty(currentLevel);
+        AssetDatabase.SaveAssetIfDirty(currentLevel);
+
+        return true;
     }
 
     public void SelectNode(LevelNodeData node)
@@ -448,17 +466,16 @@ public sealed class LevelEditorContext
 
     private void NormalizeLayoutRoot()
     {
-        if (currentLevel == null || currentLevel.Graph.NodeCount == 0)
-        {
-            layoutRootNodeId = null;
-            return;
-        }
-
-        if (!string.IsNullOrWhiteSpace(layoutRootNodeId) &&
-            currentLevel.Graph.FindNode(layoutRootNodeId) != null)
+        if (currentLevel == null)
             return;
 
-        layoutRootNodeId = currentLevel.Graph.Nodes[0].Id;
+        string previousRoot =
+            currentLevel.LayoutRootNodeId;
+
+        currentLevel.EnsureIntegrity();
+
+        if (previousRoot != currentLevel.LayoutRootNodeId)
+            EditorUtility.SetDirty(currentLevel);
     }
 
     private void InvalidateSpatialLayout()

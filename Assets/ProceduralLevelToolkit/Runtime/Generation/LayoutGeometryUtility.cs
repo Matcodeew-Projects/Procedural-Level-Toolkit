@@ -10,23 +10,32 @@ public static class LayoutGeometryUtility
     // Spatial Convention
     // =========================================================
     //
-    // IMPORTANT:
+    // Room Editor:
     //
-    // Layout coordinates use:
+    // (0,0) --------> +X
+    //   |
+    //   |
+    //   v
+    //  +Y
+    //
+    // North = y == 0
+    // South = y == Height - 1
+    //
+    // Layout / Unity:
     //
     // logical X -> Unity X
-    // logical Y -> Unity Z
+    // logical North -> Unity +Z
+    //
+    // Therefore Room Editor Y must be inverted when converted
+    // to the spatial Z axis.
     //
     // A LevelModuleInstanceData.Position represents the CENTER
     // pivot of the Room, not its bottom-left corner.
     //
-    // This matches the RoomGenerator convention when generated
-    // Room prefabs are centered around their root.
-    //
     // Room local bounds:
     //
     // X = [-Width / 2, +Width / 2]
-    // Y = [-Height / 2, +Height / 2]
+    // Z = [-Height / 2, +Height / 2]
     //
     // Socket anchors are projected onto those real boundaries.
     // =========================================================
@@ -63,9 +72,10 @@ public static class LayoutGeometryUtility
 
 
         /*
-         * Position along the wall is measured from the logical
-         * grid cell center, then shifted because the Room root
-         * is at its center.
+         * X follows the Room Editor directly:
+         *
+         * x = 0 -> West
+         * x = Width - 1 -> East
          */
 
         float localCellX =
@@ -74,10 +84,24 @@ public static class LayoutGeometryUtility
             halfWidth;
 
 
+        /*
+         * Room Editor Y increases downward.
+         *
+         * Spatial Z increases toward North.
+         *
+         * Therefore:
+         *
+         * y = 0
+         *     -> positive local spatial Y / Unity +Z
+         *
+         * y = Height - 1
+         *     -> negative local spatial Y / Unity -Z
+         */
+
         float localCellY =
-            cell.y +
-            0.5f -
-            halfHeight;
+            halfHeight -
+            cell.y -
+            0.5f;
 
 
         switch (socket.Direction)
@@ -351,6 +375,7 @@ public static class LayoutGeometryUtility
          * Sharing a wall or socket boundary is valid.
          * Only positive-area intersection is an overlap.
          */
+
         return
             overlapX >
             Epsilon

@@ -3,10 +3,44 @@ using UnityEngine;
 
 public sealed class LevelPreviewController
 {
+    // =========================================================
+    // Camera Settings
+    // =========================================================
+
+    private const float OrbitSensitivity =
+        0.6f;
+
+    private const float ZoomSensitivity =
+        0.08f;
+
+    private const float PanSensitivity =
+        0.0025f;
+
+    private const float MinDistance =
+        0.05f;
+
+    private const float MaxDistance =
+        100000f;
+
+    private const float MinPitch =
+        5f;
+
+    private const float MaxPitch =
+        89f;
+
+
+    // =========================================================
+    // Preview
+    // =========================================================
+
     private PreviewRenderUtility previewUtility;
 
     private GameObject levelRoot;
 
+
+    // =========================================================
+    // Camera State
+    // =========================================================
 
     private Vector3 target =
         Vector3.zero;
@@ -15,11 +49,15 @@ public sealed class LevelPreviewController
         45f;
 
     private float pitch =
-        55f;
+        45f;
 
     private float distance =
         20f;
 
+
+    // =========================================================
+    // Properties
+    // =========================================================
 
     public string LastError
     {
@@ -40,6 +78,10 @@ public sealed class LevelPreviewController
         levelRoot != null;
 
 
+    // =========================================================
+    // Constructor
+    // =========================================================
+
     public LevelPreviewController()
     {
         CreatePreviewUtility();
@@ -56,11 +98,15 @@ public sealed class LevelPreviewController
             new PreviewRenderUtility();
 
 
-        previewUtility.camera.clearFlags =
+        Camera camera =
+            previewUtility.camera;
+
+
+        camera.clearFlags =
             CameraClearFlags.SolidColor;
 
 
-        previewUtility.camera.backgroundColor =
+        camera.backgroundColor =
             EditorGUIUtility.isProSkin
                 ? new Color(
                     0.095f,
@@ -76,19 +122,19 @@ public sealed class LevelPreviewController
                 );
 
 
-        previewUtility.camera.nearClipPlane =
+        camera.nearClipPlane =
             0.01f;
 
 
-        previewUtility.camera.farClipPlane =
+        camera.farClipPlane =
             100000f;
 
 
-        previewUtility.camera.fieldOfView =
+        camera.fieldOfView =
             50f;
 
 
-        previewUtility.camera.useOcclusionCulling =
+        camera.useOcclusionCulling =
             false;
 
 
@@ -108,13 +154,25 @@ public sealed class LevelPreviewController
                 );
 
 
+        ConfigureLights();
+
+        UpdateCameraTransform();
+    }
+
+
+    private void ConfigureLights()
+    {
         Light[] lights =
             previewUtility.lights;
 
 
-        if (lights != null &&
-            lights.Length >
-            0)
+        if (lights == null)
+        {
+            return;
+        }
+
+
+        if (lights.Length > 0)
         {
             lights[0].intensity =
                 1.25f;
@@ -135,9 +193,7 @@ public sealed class LevelPreviewController
         }
 
 
-        if (lights != null &&
-            lights.Length >
-            1)
+        if (lights.Length > 1)
         {
             lights[1].intensity =
                 0.55f;
@@ -156,9 +212,6 @@ public sealed class LevelPreviewController
             lights[1].shadows =
                 LightShadows.None;
         }
-
-
-        UpdateCameraTransform();
     }
 
 
@@ -176,18 +229,22 @@ public sealed class LevelPreviewController
             null;
 
 
-        if (previewUtility != null)
+        if (previewUtility == null)
         {
-            previewUtility.Cleanup();
-
-            previewUtility =
-                null;
+            return;
         }
+
+
+        previewUtility.Cleanup();
+
+
+        previewUtility =
+            null;
     }
 
 
     // =========================================================
-    // Build Preview Level
+    // Build Preview
     // =========================================================
 
     public void Rebuild(
@@ -312,7 +369,7 @@ public sealed class LevelPreviewController
 
 
     // =========================================================
-    // Framing
+    // Frame
     // =========================================================
 
     public void Frame()
@@ -375,6 +432,10 @@ public sealed class LevelPreviewController
         UpdateCameraTransform();
     }
 
+
+    // =========================================================
+    // Bounds
+    // =========================================================
 
     private bool TryGetRenderableBounds(
         out Bounds bounds
@@ -498,7 +559,7 @@ public sealed class LevelPreviewController
 
 
     // =========================================================
-    // Camera Controls
+    // Orbit
     // =========================================================
 
     public void Orbit(
@@ -507,19 +568,26 @@ public sealed class LevelPreviewController
     {
         yaw +=
             delta.x *
-            0.35f;
+            OrbitSensitivity;
 
+
+        /*
+         * Vertical movement intentionally inverted.
+         *
+         * Mouse up   -> camera goes down
+         * Mouse down -> camera goes up
+         */
 
         pitch -=
             delta.y *
-            0.35f;
+            OrbitSensitivity;
 
 
         pitch =
             Mathf.Clamp(
                 pitch,
-                8f,
-                89f
+                MinPitch,
+                MaxPitch
             );
 
 
@@ -527,12 +595,15 @@ public sealed class LevelPreviewController
     }
 
 
+    // =========================================================
+    // Pan
+    // =========================================================
+
     public void Pan(
         Vector2 delta
     )
     {
-        if (previewUtility ==
-            null)
+        if (previewUtility == null)
         {
             return;
         }
@@ -544,9 +615,9 @@ public sealed class LevelPreviewController
 
         float scale =
             Mathf.Max(
-                0.001f,
+                0.0001f,
                 distance *
-                0.0015f
+                PanSensitivity
             );
 
 
@@ -566,6 +637,10 @@ public sealed class LevelPreviewController
     }
 
 
+    // =========================================================
+    // Zoom
+    // =========================================================
+
     public void Zoom(
         float wheelDelta
     )
@@ -573,15 +648,15 @@ public sealed class LevelPreviewController
         distance *=
             Mathf.Exp(
                 wheelDelta *
-                0.08f
+                ZoomSensitivity
             );
 
 
         distance =
             Mathf.Clamp(
                 distance,
-                0.05f,
-                100000f
+                MinDistance,
+                MaxDistance
             );
 
 
@@ -589,10 +664,13 @@ public sealed class LevelPreviewController
     }
 
 
+    // =========================================================
+    // Camera
+    // =========================================================
+
     private void UpdateCameraTransform()
     {
-        if (previewUtility ==
-            null)
+        if (previewUtility == null)
         {
             return;
         }
@@ -627,24 +705,21 @@ public sealed class LevelPreviewController
 
 
     // =========================================================
-    // Render
+    // Draw
     // =========================================================
 
     public void Draw(
         Rect rect
     )
     {
-        if (previewUtility ==
-            null)
+        if (previewUtility == null)
         {
             return;
         }
 
 
-        if (rect.width <=
-                1f ||
-            rect.height <=
-                1f)
+        if (rect.width <= 1f ||
+            rect.height <= 1f)
         {
             return;
         }
@@ -672,15 +747,18 @@ public sealed class LevelPreviewController
             previewUtility.EndPreview();
 
 
-        if (texture != null)
+        if (texture == null)
         {
-            GUI.DrawTexture(
-                rect,
-                texture,
-                ScaleMode.StretchToFill,
-                false
-            );
+            return;
         }
+
+
+        GUI.DrawTexture(
+            rect,
+            texture,
+            ScaleMode.StretchToFill,
+            false
+        );
     }
 
 

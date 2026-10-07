@@ -448,6 +448,38 @@ public sealed class RoomDefinition
     public RoomSocketData AddSocket(
         Vector2Int position)
     {
+        if (!TryGetDefaultSocketDirection(
+                position,
+                out SocketDirection direction
+            ))
+        {
+            return null;
+        }
+
+
+        return AddSocket(
+            position,
+            direction
+        );
+    }
+
+
+    public RoomSocketData AddSocket(
+        Vector2Int position,
+        SocketDirection direction)
+    {
+        if (!IsInside(
+                position
+            ) ||
+            !IsSocketDirectionValidForPosition(
+                position,
+                direction
+            ))
+        {
+            return null;
+        }
+
+
         RoomSocketData existing =
             GetSocketAt(
                 position
@@ -455,7 +487,9 @@ public sealed class RoomDefinition
 
 
         if (existing != null)
+        {
             return existing;
+        }
 
 
         RoomSocketData socket =
@@ -464,12 +498,122 @@ public sealed class RoomDefinition
             );
 
 
+        socket.SetDirection(
+            direction
+        );
+
+
         sockets.Add(
             socket
         );
 
 
         return socket;
+    }
+
+
+    public bool TryGetDefaultSocketDirection(
+        Vector2Int position,
+        out SocketDirection direction)
+    {
+        direction =
+            SocketDirection.North;
+
+
+        if (!IsInside(
+                position
+            ))
+        {
+            return false;
+        }
+
+
+        // UI grid convention:
+        // Y = 0 is the top row, Y increases downward.
+        // X = 0 is the left column, X increases to the right.
+
+        if (position.y ==
+            0)
+        {
+            direction =
+                SocketDirection.North;
+
+
+            return true;
+        }
+
+
+        if (position.x ==
+            width - 1)
+        {
+            direction =
+                SocketDirection.East;
+
+
+            return true;
+        }
+
+
+        if (position.y ==
+            height - 1)
+        {
+            direction =
+                SocketDirection.South;
+
+
+            return true;
+        }
+
+
+        if (position.x ==
+            0)
+        {
+            direction =
+                SocketDirection.West;
+
+
+            return true;
+        }
+
+
+        return false;
+    }
+
+
+    public bool IsSocketDirectionValidForPosition(
+        Vector2Int position,
+        SocketDirection direction)
+    {
+        if (!IsInside(
+                position
+            ))
+        {
+            return false;
+        }
+
+
+        return direction
+            switch
+        {
+            SocketDirection.North =>
+                position.y ==
+                0,
+
+            SocketDirection.East =>
+                position.x ==
+                width - 1,
+
+            SocketDirection.South =>
+                position.y ==
+                height - 1,
+
+            SocketDirection.West =>
+                position.x ==
+                0,
+
+            _ =>
+                false
+        };
     }
 
 

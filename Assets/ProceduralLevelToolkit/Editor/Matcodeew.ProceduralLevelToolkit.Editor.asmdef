@@ -1,0 +1,16 @@
+{
+    "name": "Matcodeew.ProceduralLevelToolkit.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:f21e0642dd286c845823b14bac2a3168"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1102,14 +1102,36 @@ public sealed class RoomEditorController
             return;
         }
 
+        if (!room.TryGetDefaultSocketDirection(
+                position,
+                out SocketDirection direction
+            ))
+        {
+            ui.SetStatus(
+                "Sockets can only be placed on the outer border of the Room."
+            );
+
+            return;
+        }
+
         EnsureStrokeUndo(
             "Create Room Socket"
         );
 
         socket =
             room.AddSocket(
-                position
+                position,
+                direction
             );
+
+        if (socket == null)
+        {
+            ui.SetStatus(
+                "Could not create the socket at this position."
+            );
+
+            return;
+        }
 
         context.SetSelectedSocket(
             socket
@@ -1117,6 +1139,10 @@ public sealed class RoomEditorController
 
         MarkRoomDirty();
         ui.GridCanvas.Refresh();
+
+        ui.SetStatus(
+            $"Created {direction} socket at {position}."
+        );
     }
 
     private void ChangeSocketId(
@@ -1139,8 +1165,17 @@ public sealed class RoomEditorController
     private void ChangeSocketDirection(
         string value)
     {
-        if (context.SelectedSocket == null)
+        RoomSocketData socket =
+            context.SelectedSocket;
+
+        RoomDefinition room =
+            context.CurrentRoom;
+
+        if (socket == null ||
+            room == null)
+        {
             return;
+        }
 
         if (
             !Enum.TryParse(
@@ -1151,11 +1186,26 @@ public sealed class RoomEditorController
             return;
         }
 
+        if (!room.IsSocketDirectionValidForPosition(
+                socket.Position,
+                direction
+            ))
+        {
+            ui.SetStatus(
+                $"{direction} is not valid at {socket.Position}. " +
+                "The socket direction must point out through the Room border."
+            );
+
+            RefreshInspector();
+
+            return;
+        }
+
         RecordImmediateUndo(
             "Change Socket Direction"
         );
 
-        context.SelectedSocket.SetDirection(
+        socket.SetDirection(
             direction
         );
 

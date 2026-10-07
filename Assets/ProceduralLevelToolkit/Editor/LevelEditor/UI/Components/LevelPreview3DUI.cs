@@ -16,7 +16,11 @@ public sealed class LevelPreview3DUI
     private readonly Label statusLabel;
 
 
-    private bool dragging;
+    // =========================================================
+    // Drag State
+    // =========================================================
+
+    private bool orbiting;
 
     private bool panning;
 
@@ -72,7 +76,7 @@ public sealed class LevelPreview3DUI
             )
             {
                 text =
-                    "Rebuild Preview"
+                    "Refresh"
             };
 
 
@@ -82,7 +86,7 @@ public sealed class LevelPreview3DUI
             )
             {
                 text =
-                    "Frame"
+                    "Fit"
             };
 
 
@@ -96,7 +100,7 @@ public sealed class LevelPreview3DUI
             8f;
 
         statusLabel.style.opacity =
-            0.75f;
+            0.65f;
 
         statusLabel.style.whiteSpace =
             WhiteSpace.Normal;
@@ -214,12 +218,14 @@ public sealed class LevelPreview3DUI
 
     private void EnsureController()
     {
-        if (controller ==
-            null)
+        if (controller != null)
         {
-            controller =
-                new LevelPreviewController();
+            return;
         }
+
+
+        controller =
+            new LevelPreviewController();
     }
 
 
@@ -277,8 +283,7 @@ public sealed class LevelPreview3DUI
 
         statusLabel.text =
             $"Instances: {controller.InstanceCount}  •  " +
-            "Left drag: orbit  •  " +
-            "Middle/Alt+Left: pan  •  Wheel: zoom";
+            "Left: orbit  •  Middle: pan  •  Wheel: zoom";
     }
 
 
@@ -349,75 +354,99 @@ public sealed class LevelPreview3DUI
 
     private void HandleInput(
         Rect rect,
-        Event evt
+        Event current
     )
     {
-        if (evt ==
-            null)
+        if (current == null)
         {
             return;
         }
 
 
-        bool inside =
+        bool mouseInside =
             rect.Contains(
-                evt.mousePosition
+                current.mousePosition
             );
 
 
-        switch (evt.type)
+        switch (current.type)
         {
+            // =================================================
+            // Start Orbit / Pan
+            // =================================================
+
             case EventType.MouseDown:
                 {
-                    if (!inside)
+                    if (!mouseInside)
                     {
                         return;
                     }
 
 
-                    bool wantsOrbit =
-                        evt.button ==
-                        0 &&
-                        !evt.alt;
+                    /*
+                     * Same controls as RoomEditor:
+                     *
+                     * Left Mouse   -> Orbit
+                     * Middle Mouse -> Pan
+                     */
 
-
-                    bool wantsPan =
-                        evt.button ==
-                        2
-                        ||
-                        (
-                            evt.button ==
-                            0 &&
-                            evt.alt
-                        );
-
-
-                    if (!wantsOrbit &&
-                        !wantsPan)
+                    if (current.button ==
+                        0)
                     {
+                        orbiting =
+                            true;
+
+
+                        panning =
+                            false;
+
+
+                        current.Use();
+
+
                         return;
                     }
 
 
-                    dragging =
-                        true;
+                    if (current.button ==
+                        2)
+                    {
+                        panning =
+                            true;
 
 
-                    panning =
-                        wantsPan;
+                        orbiting =
+                            false;
 
 
-                    evt.Use();
+                        current.Use();
+                    }
 
 
                     break;
                 }
 
 
+            // =================================================
+            // Drag
+            // =================================================
+
             case EventType.MouseDrag:
                 {
-                    if (!dragging)
+                    if (orbiting)
                     {
+                        controller.Orbit(
+                            current.delta
+                        );
+
+
+                        previewContainer
+                            .MarkDirtyRepaint();
+
+
+                        current.Use();
+
+
                         return;
                     }
 
@@ -425,37 +454,36 @@ public sealed class LevelPreview3DUI
                     if (panning)
                     {
                         controller.Pan(
-                            evt.delta
+                            current.delta
                         );
+
+
+                        previewContainer
+                            .MarkDirtyRepaint();
+
+
+                        current.Use();
                     }
-                    else
-                    {
-                        controller.Orbit(
-                            evt.delta
-                        );
-                    }
-
-
-                    previewContainer
-                        .MarkDirtyRepaint();
-
-
-                    evt.Use();
 
 
                     break;
                 }
 
 
+            // =================================================
+            // Stop
+            // =================================================
+
             case EventType.MouseUp:
                 {
-                    if (!dragging)
+                    if (!orbiting &&
+                        !panning)
                     {
                         return;
                     }
 
 
-                    dragging =
+                    orbiting =
                         false;
 
 
@@ -463,23 +491,27 @@ public sealed class LevelPreview3DUI
                         false;
 
 
-                    evt.Use();
+                    current.Use();
 
 
                     break;
                 }
 
 
+            // =================================================
+            // Zoom
+            // =================================================
+
             case EventType.ScrollWheel:
                 {
-                    if (!inside)
+                    if (!mouseInside)
                     {
                         return;
                     }
 
 
                     controller.Zoom(
-                        evt.delta.y
+                        current.delta.y
                     );
 
 
@@ -487,16 +519,20 @@ public sealed class LevelPreview3DUI
                         .MarkDirtyRepaint();
 
 
-                    evt.Use();
+                    current.Use();
 
 
                     break;
                 }
 
 
+            // =================================================
+            // Safety
+            // =================================================
+
             case EventType.MouseLeaveWindow:
                 {
-                    dragging =
+                    orbiting =
                         false;
 
 

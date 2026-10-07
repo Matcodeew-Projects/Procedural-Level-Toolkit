@@ -6,12 +6,6 @@ using UnityEngine.UIElements;
 public sealed class LevelGraphUI
     : VisualElement
 {
-    private const float CanvasWidth =
-        2400f;
-
-    private const float CanvasHeight =
-        1600f;
-
     private const float NodeWidth =
         180f;
 
@@ -24,19 +18,55 @@ public sealed class LevelGraphUI
     private const int ConnectionHitSamples =
         32;
 
+    private const float DefaultGridStep =
+        40f;
+
+    private const float MinZoom =
+        0.0001f;
+
+    private const float MaxZoom =
+        1000f;
+
 
     private readonly LevelEditorContext context;
 
-    private readonly ScrollView scrollView;
+    private readonly VisualElement viewport;
 
-    private readonly VisualElement canvas;
+    private readonly Label zoomLabel;
+
+    private readonly Label positionLabel;
 
 
     private readonly Dictionary<
         string,
         NodeVisual
     > nodeVisuals =
-        new Dictionary<string, NodeVisual>();
+        new Dictionary<
+            string,
+            NodeVisual
+        >();
+
+
+    private Vector2 cameraWorldCenter =
+        new Vector2(
+            500f,
+            300f
+        );
+
+    private float zoom =
+        1f;
+
+
+    private bool panning;
+
+    private int capturedPanPointerId =
+        -1;
+
+    private Vector2 previousPanPointer;
+
+
+    public float Zoom =>
+        zoom;
 
 
     public LevelGraphUI(
@@ -52,6 +82,20 @@ public sealed class LevelGraphUI
         );
 
 
+        style.flexGrow =
+            1;
+
+        style.minWidth =
+            0f;
+
+        style.minHeight =
+            0f;
+
+
+        focusable =
+            true;
+
+
         // =====================================================
         // Toolbar
         // =====================================================
@@ -65,18 +109,77 @@ public sealed class LevelGraphUI
         );
 
 
-        Label info =
+        Button fitButton =
+            new Button(
+                Fit
+            )
+            {
+                text =
+                    "Fit"
+            };
+
+
+        Button resetButton =
+            new Button(
+                ResetView
+            )
+            {
+                text =
+                    "100%"
+            };
+
+
+        zoomLabel =
+            new Label();
+
+
+        zoomLabel.AddToClassList(
+            "level-graph-toolbar__zoom"
+        );
+
+
+        positionLabel =
+            new Label();
+
+
+        positionLabel.AddToClassList(
+            "level-graph-toolbar__position"
+        );
+
+
+        Label help =
             new Label(
-                "Click: select   •   Shift + node: connect   •   Shift + link: delete   •   Drag: move"
+                "Shift + node: connect  •  Delete: remove  •  Arrows: navigate  •  Wheel: zoom  •  Middle / Alt+Left: pan"
             );
 
 
-        info.style.opacity =
-            0.65f;
+        help.AddToClassList(
+            "level-graph-toolbar__help"
+        );
 
 
         toolbar.Add(
-            info
+            fitButton
+        );
+
+
+        toolbar.Add(
+            resetButton
+        );
+
+
+        toolbar.Add(
+            zoomLabel
+        );
+
+
+        toolbar.Add(
+            positionLabel
+        );
+
+
+        toolbar.Add(
+            help
         );
 
 
@@ -86,56 +189,106 @@ public sealed class LevelGraphUI
 
 
         // =====================================================
-        // Scroll
+        // Infinite viewport
         // =====================================================
 
-        scrollView =
-            new ScrollView(
-                ScrollViewMode
-                    .VerticalAndHorizontal
-            );
-
-
-        scrollView.AddToClassList(
-            "level-graph-scroll"
-        );
-
-
-        canvas =
+        viewport =
             new VisualElement();
 
 
-        canvas.AddToClassList(
-            "level-graph-canvas"
+        viewport.name =
+            "level-graph-infinite-viewport";
+
+
+        viewport.AddToClassList(
+            "level-graph-viewport"
         );
 
 
-        canvas.style.width =
-            CanvasWidth;
+        viewport.style.flexGrow =
+            1;
+
+        viewport.style.minWidth =
+            0f;
+
+        viewport.style.minHeight =
+            0f;
+
+        viewport.style.overflow =
+            Overflow.Hidden;
 
 
-        canvas.style.height =
-            CanvasHeight;
+        viewport.focusable =
+            true;
 
 
-        canvas.generateVisualContent +=
+        viewport.generateVisualContent +=
             DrawGraph;
 
 
-        canvas.RegisterCallback<
-            PointerDownEvent
+        viewport.RegisterCallback<
+            WheelEvent
         >(
-            OnCanvasPointerDown
+            OnWheel
         );
 
 
-        scrollView.Add(
-            canvas
+        viewport.RegisterCallback<
+            PointerDownEvent
+        >(
+            OnViewportPointerDown
+        );
+
+
+        viewport.RegisterCallback<
+            PointerMoveEvent
+        >(
+            OnViewportPointerMove
+        );
+
+
+        viewport.RegisterCallback<
+            PointerUpEvent
+        >(
+            OnViewportPointerUp
+        );
+
+
+        viewport.RegisterCallback<
+            PointerCancelEvent
+        >(
+            OnViewportPointerCancel
+        );
+
+
+        viewport.RegisterCallback<
+            PointerCaptureOutEvent
+        >(
+            OnViewportPointerCaptureOut
+        );
+
+
+        viewport.RegisterCallback<
+            KeyDownEvent
+        >(
+            OnKeyDown
+        );
+
+
+        viewport.RegisterCallback<
+            GeometryChangedEvent
+        >(
+            _ =>
+            {
+                RefreshVisualTransforms();
+
+                viewport.MarkDirtyRepaint();
+            }
         );
 
 
         Add(
-            scrollView
+            viewport
         );
 
 
@@ -158,11 +311,13 @@ public sealed class LevelGraphUI
 
 
         Refresh();
+
+        UpdateToolbar();
     }
 
 
     // =========================================================
-    // Events
+    // Context Events
     // =========================================================
 
     private void OnAttach(
@@ -202,30 +357,240 @@ public sealed class LevelGraphUI
 
 
     // =========================================================
-    // Suggested position
+    // Public View API
     // =========================================================
 
     public Vector2 GetSuggestedNodePosition()
     {
+        Vector2 viewportCenter =
+            new Vector2(
+                viewport.resolvedStyle.width *
+                0.5f,
+                viewport.resolvedStyle.height *
+                0.5f
+            );
+
+
+        Vector2 worldCenter =
+            ScreenToWorld(
+                viewportCenter
+            );
+
+
         int count =
             context.Graph?.NodeCount
             ?? 0;
 
 
         int column =
-            count % 4;
+            count %
+            3;
 
         int row =
-            count / 4;
+            count /
+            3;
 
 
-        return new Vector2(
-            100f +
-            column * 240f,
+        return worldCenter +
+            new Vector2(
+                (
+                    column -
+                    1
+                ) *
+                230f,
+                row *
+                130f
+            );
+    }
 
-            100f +
-            row * 140f
-        );
+
+    public void FocusGraph()
+    {
+        viewport.Focus();
+    }
+
+
+    public void ResetView()
+    {
+        zoom =
+            1f;
+
+
+        if (context.Graph != null &&
+            context.Graph.NodeCount >
+            0)
+        {
+            Fit();
+
+            return;
+        }
+
+
+        cameraWorldCenter =
+            Vector2.zero;
+
+
+        RefreshView();
+    }
+
+
+    public void Fit()
+    {
+        if (context.Graph == null ||
+            context.Graph.NodeCount ==
+            0)
+        {
+            cameraWorldCenter =
+                Vector2.zero;
+
+
+            zoom =
+                1f;
+
+
+            RefreshView();
+
+            return;
+        }
+
+
+        float viewportWidth =
+            viewport.resolvedStyle.width;
+
+        float viewportHeight =
+            viewport.resolvedStyle.height;
+
+
+        if (viewportWidth <=
+                1f ||
+            viewportHeight <=
+                1f)
+        {
+            return;
+        }
+
+
+        bool hasBounds =
+            false;
+
+
+        Rect total =
+            new Rect();
+
+
+        for (int i = 0;
+             i < context.Graph.Nodes.Count;
+             i++)
+        {
+            LevelNodeData node =
+                context.Graph.Nodes[i];
+
+
+            if (node == null)
+            {
+                continue;
+            }
+
+
+            Rect bounds =
+                new Rect(
+                    node.GraphPosition.x,
+                    node.GraphPosition.y,
+                    NodeWidth,
+                    NodeHeight
+                );
+
+
+            if (!hasBounds)
+            {
+                total =
+                    bounds;
+
+
+                hasBounds =
+                    true;
+            }
+            else
+            {
+                total =
+                    Rect.MinMaxRect(
+                        Mathf.Min(
+                            total.xMin,
+                            bounds.xMin
+                        ),
+                        Mathf.Min(
+                            total.yMin,
+                            bounds.yMin
+                        ),
+                        Mathf.Max(
+                            total.xMax,
+                            bounds.xMax
+                        ),
+                        Mathf.Max(
+                            total.yMax,
+                            bounds.yMax
+                        )
+                    );
+            }
+        }
+
+
+        if (!hasBounds)
+        {
+            return;
+        }
+
+
+        cameraWorldCenter =
+            total.center;
+
+
+        float paddedWidth =
+            Mathf.Max(
+                total.width +
+                160f,
+                total.width *
+                1.15f
+            );
+
+
+        float paddedHeight =
+            Mathf.Max(
+                total.height +
+                120f,
+                total.height *
+                1.15f
+            );
+
+
+        float zoomX =
+            viewportWidth /
+            Mathf.Max(
+                1f,
+                paddedWidth
+            );
+
+
+        float zoomY =
+            viewportHeight /
+            Mathf.Max(
+                1f,
+                paddedHeight
+            );
+
+
+        zoom =
+            Mathf.Clamp(
+                Mathf.Min(
+                    zoomX,
+                    zoomY
+                ),
+                MinZoom,
+                MaxZoom
+            );
+
+
+        RefreshView();
     }
 
 
@@ -235,48 +600,127 @@ public sealed class LevelGraphUI
 
     public void Refresh()
     {
-        canvas.Clear();
+        foreach (
+            KeyValuePair<
+                string,
+                NodeVisual
+            > pair
+            in nodeVisuals
+        )
+        {
+            pair.Value
+                .RemoveFromHierarchy();
+        }
+
 
         nodeVisuals.Clear();
 
 
-        if (context.Graph == null)
+        if (context.Graph != null)
         {
-            canvas.MarkDirtyRepaint();
+            for (int i = 0;
+                 i < context.Graph.Nodes.Count;
+                 i++)
+            {
+                LevelNodeData node =
+                    context.Graph.Nodes[i];
 
+
+                if (node == null)
+                {
+                    continue;
+                }
+
+
+                CreateNodeVisual(
+                    node
+                );
+            }
+        }
+
+
+        RefreshVisualTransforms();
+
+        RefreshSelection();
+
+        viewport.MarkDirtyRepaint();
+    }
+
+
+    private void RefreshView()
+    {
+        RefreshVisualTransforms();
+
+        UpdateToolbar();
+
+        viewport.MarkDirtyRepaint();
+    }
+
+
+    private void RefreshVisualTransforms()
+    {
+        foreach (
+            KeyValuePair<
+                string,
+                NodeVisual
+            > pair
+            in nodeVisuals
+        )
+        {
+            UpdateNodeVisualTransform(
+                pair.Value
+            );
+        }
+    }
+
+
+    private void UpdateNodeVisualTransform(
+        NodeVisual visual
+    )
+    {
+        if (visual == null)
+        {
             return;
         }
 
 
-        IReadOnlyList<
-            LevelNodeData
-        > nodes =
-            context.Graph.Nodes;
-
-
-        for (int i = 0;
-             i < nodes.Count;
-             i++)
-        {
-            LevelNodeData node =
-                nodes[i];
-
-
-            if (node == null)
-            {
-                continue;
-            }
-
-
-            CreateNodeVisual(
-                node
+        Vector2 screen =
+            WorldToScreen(
+                visual.Node.GraphPosition
             );
-        }
 
 
-        RefreshSelection();
+        /*
+         * UI Toolkit scales around the element center by default.
+         * Compensate left/top so the logical top-left remains at
+         * the exact transformed graph position.
+         */
+        visual.style.left =
+            screen.x +
+            (
+                zoom -
+                1f
+            ) *
+            NodeWidth *
+            0.5f;
 
-        canvas.MarkDirtyRepaint();
+
+        visual.style.top =
+            screen.y +
+            (
+                zoom -
+                1f
+            ) *
+            NodeHeight *
+            0.5f;
+
+
+        visual.transform.scale =
+            new Vector3(
+                zoom,
+                zoom,
+                1f
+            );
     }
 
 
@@ -303,7 +747,7 @@ public sealed class LevelGraphUI
         }
 
 
-        canvas.MarkDirtyRepaint();
+        viewport.MarkDirtyRepaint();
     }
 
 
@@ -317,24 +761,37 @@ public sealed class LevelGraphUI
         }
 
 
-        if (!nodeVisuals.TryGetValue(
+        if (nodeVisuals.TryGetValue(
                 node.Id,
                 out NodeVisual visual
             ))
         {
-            return;
+            UpdateNodeVisualTransform(
+                visual
+            );
         }
 
 
-        visual.style.left =
-            node.GraphPosition.x;
+        viewport.MarkDirtyRepaint();
+    }
 
 
-        visual.style.top =
-            node.GraphPosition.y;
+    private void UpdateToolbar()
+    {
+        float percentage =
+            zoom *
+            100f;
 
 
-        canvas.MarkDirtyRepaint();
+        zoomLabel.text =
+            percentage >=
+            0.01f
+                ? $"{percentage:0.##}%"
+                : $"{percentage:0.####}%";
+
+
+        positionLabel.text =
+            $"Center {cameraWorldCenter.x:0.#}, {cameraWorldCenter.y:0.#}";
     }
 
 
@@ -348,54 +805,148 @@ public sealed class LevelGraphUI
     {
         NodeVisual visual =
             new NodeVisual(
+                this,
                 context,
                 node
             );
 
 
-        visual.style.left =
-            node.GraphPosition.x;
-
-
-        visual.style.top =
-            node.GraphPosition.y;
-
-
-        canvas.Add(
+        viewport.Add(
             visual
         );
 
 
-        nodeVisuals[node.Id] =
+        nodeVisuals[
+            node.Id
+        ] =
             visual;
+
+
+        UpdateNodeVisualTransform(
+            visual
+        );
     }
 
 
     // =========================================================
-    // Canvas Input
+    // Zoom
     // =========================================================
 
-    private void OnCanvasPointerDown(
+    private void OnWheel(
+        WheelEvent evt
+    )
+    {
+        Vector2 mouseScreen =
+            evt.localMousePosition;
+
+
+        Vector2 worldBefore =
+            ScreenToWorld(
+                mouseScreen
+            );
+
+
+        float factor =
+            Mathf.Exp(
+                -evt.delta.y *
+                0.08f
+            );
+
+
+        float newZoom =
+            Mathf.Clamp(
+                zoom *
+                factor,
+                MinZoom,
+                MaxZoom
+            );
+
+
+        if (Mathf.Approximately(
+                newZoom,
+                zoom
+            ))
+        {
+            return;
+        }
+
+
+        zoom =
+            newZoom;
+
+
+        Vector2 center =
+            GetViewportCenter();
+
+
+        cameraWorldCenter =
+            worldBefore -
+            (
+                mouseScreen -
+                center
+            ) /
+            zoom;
+
+
+        RefreshView();
+
+
+        evt.StopPropagation();
+    }
+
+
+    // =========================================================
+    // Viewport Input
+    // =========================================================
+
+    private void OnViewportPointerDown(
         PointerDownEvent evt
     )
     {
-        if (evt.button != 0)
+        FocusGraph();
+
+
+        Vector2 localPosition =
+            viewport.WorldToLocal(
+                evt.position
+            );
+
+
+        bool wantsPan =
+            evt.button ==
+            2
+            ||
+            (
+                evt.button ==
+                0 &&
+                evt.altKey
+            );
+
+
+        if (wantsPan)
+        {
+            BeginPan(
+                evt,
+                localPosition
+            );
+
+
+            return;
+        }
+
+
+        if (evt.button !=
+            0)
         {
             return;
         }
 
 
         if (evt.target !=
-            canvas)
+            viewport)
         {
             return;
         }
-
-
-        Vector2 localPosition =
-            canvas.WorldToLocal(
-                evt.position
-            );
 
 
         LevelConnectionData connection =
@@ -427,6 +978,503 @@ public sealed class LevelGraphUI
 
 
         context.ClearSelection();
+
+
+        evt.StopPropagation();
+    }
+
+
+    private void BeginPan(
+        PointerDownEvent evt,
+        Vector2 localPosition
+    )
+    {
+        panning =
+            true;
+
+
+        capturedPanPointerId =
+            evt.pointerId;
+
+
+        previousPanPointer =
+            localPosition;
+
+
+        PointerCaptureHelper
+            .CapturePointer(
+                viewport,
+                capturedPanPointerId
+            );
+
+
+        evt.StopPropagation();
+    }
+
+
+    private void OnViewportPointerMove(
+        PointerMoveEvent evt
+    )
+    {
+        if (!panning ||
+            evt.pointerId !=
+            capturedPanPointerId)
+        {
+            return;
+        }
+
+
+        if (!PointerCaptureHelper
+                .HasPointerCapture(
+                    viewport,
+                    capturedPanPointerId
+                ))
+        {
+            return;
+        }
+
+
+        Vector2 current =
+            viewport.WorldToLocal(
+                evt.position
+            );
+
+
+        Vector2 delta =
+            current -
+            previousPanPointer;
+
+
+        cameraWorldCenter -=
+            delta /
+            zoom;
+
+
+        previousPanPointer =
+            current;
+
+
+        RefreshView();
+
+
+        evt.StopPropagation();
+    }
+
+
+    private void OnViewportPointerUp(
+        PointerUpEvent evt
+    )
+    {
+        if (!panning ||
+            evt.pointerId !=
+            capturedPanPointerId)
+        {
+            return;
+        }
+
+
+        EndPan();
+
+
+        evt.StopPropagation();
+    }
+
+
+    private void OnViewportPointerCancel(
+        PointerCancelEvent evt
+    )
+    {
+        if (evt.pointerId ==
+            capturedPanPointerId)
+        {
+            EndPan();
+        }
+    }
+
+
+    private void OnViewportPointerCaptureOut(
+        PointerCaptureOutEvent evt
+    )
+    {
+        panning =
+            false;
+
+
+        capturedPanPointerId =
+            -1;
+    }
+
+
+    private void EndPan()
+    {
+        panning =
+            false;
+
+
+        if (capturedPanPointerId <
+            0)
+        {
+            return;
+        }
+
+
+        if (PointerCaptureHelper
+                .HasPointerCapture(
+                    viewport,
+                    capturedPanPointerId
+                ))
+        {
+            PointerCaptureHelper
+                .ReleasePointer(
+                    viewport,
+                    capturedPanPointerId
+                );
+        }
+
+
+        capturedPanPointerId =
+            -1;
+    }
+
+
+    // =========================================================
+    // Keyboard
+    // =========================================================
+
+    private void OnKeyDown(
+        KeyDownEvent evt
+    )
+    {
+        switch (evt.keyCode)
+        {
+            case KeyCode.Delete:
+            case KeyCode.Backspace:
+                DeleteSelection();
+
+                evt.StopPropagation();
+
+                break;
+
+
+            case KeyCode.LeftArrow:
+                NavigateSelection(
+                    Vector2.left
+                );
+
+                evt.StopPropagation();
+
+                break;
+
+
+            case KeyCode.RightArrow:
+                NavigateSelection(
+                    Vector2.right
+                );
+
+                evt.StopPropagation();
+
+                break;
+
+
+            case KeyCode.UpArrow:
+                NavigateSelection(
+                    Vector2.up
+                );
+
+                evt.StopPropagation();
+
+                break;
+
+
+            case KeyCode.DownArrow:
+                NavigateSelection(
+                    Vector2.down
+                );
+
+                evt.StopPropagation();
+
+                break;
+        }
+    }
+
+
+    private void DeleteSelection()
+    {
+        if (context.SelectedNode != null)
+        {
+            context.RemoveNode(
+                context.SelectedNode
+            );
+
+
+            return;
+        }
+
+
+        if (context.SelectedConnection != null)
+        {
+            context.RemoveConnection(
+                context.SelectedConnection
+            );
+        }
+    }
+
+
+    private void NavigateSelection(
+        Vector2 requestedDirection
+    )
+    {
+        if (context.Graph == null)
+        {
+            return;
+        }
+
+
+        if (context.SelectedNode != null)
+        {
+            NavigateFromNode(
+                context.SelectedNode,
+                requestedDirection
+            );
+
+
+            return;
+        }
+
+
+        if (context.SelectedConnection != null)
+        {
+            NavigateFromConnection(
+                context.SelectedConnection,
+                requestedDirection
+            );
+
+
+            return;
+        }
+
+
+        if (context.Graph.NodeCount >
+            0)
+        {
+            context.SelectNode(
+                context.Graph.Nodes[0]
+            );
+        }
+    }
+
+
+    private void NavigateFromNode(
+        LevelNodeData node,
+        Vector2 requestedDirection
+    )
+    {
+        LevelConnectionData bestConnection =
+            null;
+
+
+        float bestScore =
+            float.NegativeInfinity;
+
+
+        Vector2 nodeCenter =
+            GetNodeCenter(
+                node
+            );
+
+
+        for (int i = 0;
+             i < context.Graph.Connections.Count;
+             i++)
+        {
+            LevelConnectionData connection =
+                context.Graph.Connections[i];
+
+
+            if (connection == null ||
+                !connection.TouchesNode(
+                    node.Id
+                ))
+            {
+                continue;
+            }
+
+
+            string otherId =
+                connection.FromNodeId ==
+                node.Id
+                    ? connection.ToNodeId
+                    : connection.FromNodeId;
+
+
+            LevelNodeData other =
+                context.Graph.FindNode(
+                    otherId
+                );
+
+
+            if (other == null)
+            {
+                continue;
+            }
+
+
+            Vector2 delta =
+                GetNodeCenter(
+                    other
+                )
+                -
+                nodeCenter;
+
+
+            float score =
+                GetNavigationScore(
+                    delta,
+                    requestedDirection
+                );
+
+
+            if (score >
+                bestScore)
+            {
+                bestScore =
+                    score;
+
+
+                bestConnection =
+                    connection;
+            }
+        }
+
+
+        if (bestConnection != null &&
+            bestScore >
+            0f)
+        {
+            context.SelectConnection(
+                bestConnection
+            );
+        }
+    }
+
+
+    private void NavigateFromConnection(
+        LevelConnectionData connection,
+        Vector2 requestedDirection
+    )
+    {
+        LevelNodeData from =
+            context.Graph.FindNode(
+                connection.FromNodeId
+            );
+
+
+        LevelNodeData to =
+            context.Graph.FindNode(
+                connection.ToNodeId
+            );
+
+
+        if (from == null ||
+            to == null)
+        {
+            return;
+        }
+
+
+        Vector2 connectionCenter =
+            (
+                GetNodeCenter(
+                    from
+                )
+                +
+                GetNodeCenter(
+                    to
+                )
+            )
+            *
+            0.5f;
+
+
+        float fromScore =
+            GetNavigationScore(
+                GetNodeCenter(
+                    from
+                )
+                -
+                connectionCenter,
+                requestedDirection
+            );
+
+
+        float toScore =
+            GetNavigationScore(
+                GetNodeCenter(
+                    to
+                )
+                -
+                connectionCenter,
+                requestedDirection
+            );
+
+
+        if (fromScore <=
+                0f &&
+            toScore <=
+                0f)
+        {
+            return;
+        }
+
+
+        context.SelectNode(
+            toScore >
+            fromScore
+                ? to
+                : from
+        );
+    }
+
+
+    private static float GetNavigationScore(
+        Vector2 delta,
+        Vector2 requestedDirection
+    )
+    {
+        if (delta.sqrMagnitude <=
+            Mathf.Epsilon)
+        {
+            return float.NegativeInfinity;
+        }
+
+
+        Vector2 normalized =
+            delta.normalized;
+
+
+        float alignment =
+            Vector2.Dot(
+                normalized,
+                requestedDirection
+            );
+
+
+        if (alignment <=
+            0.05f)
+        {
+            return float.NegativeInfinity;
+        }
+
+
+        /*
+         * Prefer items strongly aligned with the requested arrow,
+         * then prefer shorter distances.
+         */
+        return
+            alignment *
+            100000f
+            -
+            delta.magnitude;
     }
 
 
@@ -445,19 +1493,13 @@ public sealed class LevelGraphUI
         }
 
 
-        IReadOnlyList<
-            LevelConnectionData
-        > connections =
-            context.Graph.Connections;
-
-
         for (int i =
-                 connections.Count - 1;
+                 context.Graph.Connections.Count - 1;
              i >= 0;
              i--)
         {
             LevelConnectionData connection =
-                connections[i];
+                context.Graph.Connections[i];
 
 
             if (connection == null)
@@ -588,7 +1630,8 @@ public sealed class LevelGraphUI
 
         Vector2 closestPoint =
             segmentStart +
-            segment * t;
+            segment *
+            t;
 
 
         return Vector2.Distance(
@@ -649,25 +1692,40 @@ public sealed class LevelGraphUI
         }
 
 
-        start =
+        Vector2 startWorld =
             from.GraphPosition +
             new Vector2(
                 NodeWidth,
-                NodeHeight * 0.5f
+                NodeHeight *
+                0.5f
+            );
+
+
+        Vector2 endWorld =
+            to.GraphPosition +
+            new Vector2(
+                0f,
+                NodeHeight *
+                0.5f
+            );
+
+
+        start =
+            WorldToScreen(
+                startWorld
             );
 
 
         end =
-            to.GraphPosition +
-            new Vector2(
-                0f,
-                NodeHeight * 0.5f
+            WorldToScreen(
+                endWorld
             );
 
 
         float distance =
             Mathf.Max(
-                60f,
+                60f *
+                zoom,
                 Mathf.Abs(
                     end.x -
                     start.x
@@ -759,18 +1817,12 @@ public sealed class LevelGraphUI
         }
 
 
-        IReadOnlyList<
-            LevelConnectionData
-        > connections =
-            context.Graph.Connections;
-
-
         for (int i = 0;
-             i < connections.Count;
+             i < context.Graph.Connections.Count;
              i++)
         {
             LevelConnectionData connection =
-                connections[i];
+                context.Graph.Connections[i];
 
 
             if (connection == null)
@@ -791,76 +1843,280 @@ public sealed class LevelGraphUI
         Painter2D painter
     )
     {
+        float width =
+            viewport.resolvedStyle.width;
+
+        float height =
+            viewport.resolvedStyle.height;
+
+
+        if (width <=
+                0f ||
+            height <=
+                0f)
+        {
+            return;
+        }
+
+
+        Vector2 topLeft =
+            ScreenToWorld(
+                Vector2.zero
+            );
+
+
+        Vector2 bottomRight =
+            ScreenToWorld(
+                new Vector2(
+                    width,
+                    height
+                )
+            );
+
+
+        float minX =
+            Mathf.Min(
+                topLeft.x,
+                bottomRight.x
+            );
+
+        float maxX =
+            Mathf.Max(
+                topLeft.x,
+                bottomRight.x
+            );
+
+        float minY =
+            Mathf.Min(
+                topLeft.y,
+                bottomRight.y
+            );
+
+        float maxY =
+            Mathf.Max(
+                topLeft.y,
+                bottomRight.y
+            );
+
+
+        float minorStep =
+            CalculateNiceGridStep(
+                DefaultGridStep /
+                zoom
+            );
+
+
+        float majorStep =
+            minorStep *
+            5f;
+
+
+        DrawGridLayer(
+            painter,
+            minX,
+            maxX,
+            minY,
+            maxY,
+            minorStep,
+            false
+        );
+
+
+        DrawGridLayer(
+            painter,
+            minX,
+            maxX,
+            minY,
+            maxY,
+            majorStep,
+            true
+        );
+    }
+
+
+    private void DrawGridLayer(
+        Painter2D painter,
+        float minX,
+        float maxX,
+        float minY,
+        float maxY,
+        float step,
+        bool major
+    )
+    {
         painter.strokeColor =
             EditorGUIUtility.isProSkin
                 ? new Color(
                     1f,
                     1f,
                     1f,
-                    0.055f
+                    major
+                        ? 0.075f
+                        : 0.03f
                 )
                 : new Color(
                     0f,
                     0f,
                     0f,
-                    0.08f
+                    major
+                        ? 0.10f
+                        : 0.04f
                 );
 
 
         painter.lineWidth =
-            1f;
+            major
+                ? 1.25f
+                : 1f;
 
 
-        const float grid =
-            40f;
+        float firstX =
+            Mathf.Floor(
+                minX /
+                step
+            ) *
+            step;
+
+
+        float firstY =
+            Mathf.Floor(
+                minY /
+                step
+            ) *
+            step;
 
 
         painter.BeginPath();
 
 
-        for (float x = 0f;
-             x <= CanvasWidth;
-             x += grid)
+        for (float x = firstX;
+             x <= maxX;
+             x += step)
         {
+            Vector2 a =
+                WorldToScreen(
+                    new Vector2(
+                        x,
+                        minY
+                    )
+                );
+
+
+            Vector2 b =
+                WorldToScreen(
+                    new Vector2(
+                        x,
+                        maxY
+                    )
+                );
+
+
             painter.MoveTo(
-                new Vector2(
-                    x,
-                    0f
-                )
+                a
             );
 
 
             painter.LineTo(
-                new Vector2(
-                    x,
-                    CanvasHeight
-                )
+                b
             );
         }
 
 
-        for (float y = 0f;
-             y <= CanvasHeight;
-             y += grid)
+        for (float y = firstY;
+             y <= maxY;
+             y += step)
         {
+            Vector2 a =
+                WorldToScreen(
+                    new Vector2(
+                        minX,
+                        y
+                    )
+                );
+
+
+            Vector2 b =
+                WorldToScreen(
+                    new Vector2(
+                        maxX,
+                        y
+                    )
+                );
+
+
             painter.MoveTo(
-                new Vector2(
-                    0f,
-                    y
-                )
+                a
             );
 
 
             painter.LineTo(
-                new Vector2(
-                    CanvasWidth,
-                    y
-                )
+                b
             );
         }
 
 
         painter.Stroke();
+    }
+
+
+    private static float CalculateNiceGridStep(
+        float targetWorldStep
+    )
+    {
+        targetWorldStep =
+            Mathf.Max(
+                targetWorldStep,
+                0.000001f
+            );
+
+
+        float power =
+            Mathf.Pow(
+                10f,
+                Mathf.Floor(
+                    Mathf.Log10(
+                        targetWorldStep
+                    )
+                )
+            );
+
+
+        float normalized =
+            targetWorldStep /
+            power;
+
+
+        float nice;
+
+
+        if (normalized <=
+            1f)
+        {
+            nice =
+                1f;
+        }
+        else if (normalized <=
+                 2f)
+        {
+            nice =
+                2f;
+        }
+        else if (normalized <=
+                 5f)
+        {
+            nice =
+                5f;
+        }
+        else
+        {
+            nice =
+                10f;
+        }
+
+
+        return
+            nice *
+            power;
     }
 
 
@@ -899,7 +2155,11 @@ public sealed class LevelGraphUI
 
 
             painter.lineWidth =
-                4f;
+                Mathf.Max(
+                    2f,
+                    4f *
+                    zoom
+                );
         }
         else
         {
@@ -919,10 +2179,17 @@ public sealed class LevelGraphUI
 
 
             painter.lineWidth =
-                state ==
-                LevelConnectionSocketState.Invalid
-                    ? 3f
-                    : 2f;
+                Mathf.Max(
+                    1f,
+                    (
+                        state ==
+                        LevelConnectionSocketState.Invalid
+                            ? 3f
+                            : 2f
+                    )
+                    *
+                    zoom
+                );
         }
 
 
@@ -998,15 +2265,84 @@ public sealed class LevelGraphUI
 
 
     // =========================================================
+    // Coordinates
+    // =========================================================
+
+    private Vector2 GetViewportCenter()
+    {
+        return new Vector2(
+            viewport.resolvedStyle.width *
+            0.5f,
+            viewport.resolvedStyle.height *
+            0.5f
+        );
+    }
+
+
+    private Vector2 WorldToScreen(
+        Vector2 world
+    )
+    {
+        return
+            GetViewportCenter()
+            +
+            (
+                world -
+                cameraWorldCenter
+            )
+            *
+            zoom;
+    }
+
+
+    private Vector2 ScreenToWorld(
+        Vector2 screen
+    )
+    {
+        return
+            cameraWorldCenter
+            +
+            (
+                screen -
+                GetViewportCenter()
+            )
+            /
+            zoom;
+    }
+
+
+    private static Vector2 GetNodeCenter(
+        LevelNodeData node
+    )
+    {
+        return
+            node.GraphPosition
+            +
+            new Vector2(
+                NodeWidth *
+                0.5f,
+                NodeHeight *
+                0.5f
+            );
+    }
+
+
+    // =========================================================
     // Node Visual
     // =========================================================
 
     private sealed class NodeVisual
         : VisualElement
     {
+        private readonly LevelGraphUI owner;
+
         private readonly LevelEditorContext context;
 
-        private readonly LevelNodeData node;
+
+        public LevelNodeData Node
+        {
+            get;
+        }
 
 
         private bool dragging;
@@ -1020,14 +2356,20 @@ public sealed class LevelGraphUI
 
 
         public NodeVisual(
+            LevelGraphUI owner,
             LevelEditorContext context,
             LevelNodeData node
         )
         {
+            this.owner =
+                owner;
+
+
             this.context =
                 context;
 
-            this.node =
+
+            Node =
                 node;
 
 
@@ -1036,27 +2378,25 @@ public sealed class LevelGraphUI
             );
 
 
+            string titleText =
+                node.Module != null
+                    ? node.Module.DisplayName
+                    : (
+                        node.Room != null
+                            ? node.Room.name
+                            : "Missing Room"
+                    );
+
+
             Label title =
                 new Label(
-                    node.Room != null
-                        ? node.Room.name
-                        : "Missing Room"
+                    titleText
                 );
 
 
             title.AddToClassList(
                 "level-node__title"
             );
-
-
-            string shortId =
-                node.Id != null &&
-                node.Id.Length > 8
-                    ? node.Id.Substring(
-                        0,
-                        8
-                    )
-                    : node.Id;
 
 
             int socketCount =
@@ -1070,8 +2410,20 @@ public sealed class LevelGraphUI
                 );
 
 
-            socketInfo.style.opacity =
-                0.65f;
+            socketInfo.AddToClassList(
+                "level-node__meta"
+            );
+
+
+            string shortId =
+                node.Id != null &&
+                node.Id.Length >
+                8
+                    ? node.Id.Substring(
+                        0,
+                        8
+                    )
+                    : node.Id;
 
 
             Label id =
@@ -1136,15 +2488,21 @@ public sealed class LevelGraphUI
         }
 
 
-        // =====================================================
-        // Pointer Down
-        // =====================================================
-
         private void OnPointerDown(
             PointerDownEvent evt
         )
         {
-            if (evt.button != 0)
+            owner.FocusGraph();
+
+
+            if (evt.button !=
+                0)
+            {
+                return;
+            }
+
+
+            if (evt.altKey)
             {
                 return;
             }
@@ -1153,22 +2511,23 @@ public sealed class LevelGraphUI
             if (evt.shiftKey &&
                 context.SelectedNode != null &&
                 context.SelectedNode !=
-                node)
+                Node)
             {
                 context.ConnectNodes(
                     context.SelectedNode,
-                    node
+                    Node
                 );
 
 
                 evt.StopPropagation();
+
 
                 return;
             }
 
 
             context.SelectNode(
-                node
+                Node
             );
 
 
@@ -1185,11 +2544,11 @@ public sealed class LevelGraphUI
 
 
             dragStartPosition =
-                node.GraphPosition;
+                Node.GraphPosition;
 
 
             context.BeginNodeMove(
-                node
+                Node
             );
 
 
@@ -1204,67 +2563,46 @@ public sealed class LevelGraphUI
         }
 
 
-        // =====================================================
-        // Pointer Move
-        // =====================================================
-
         private void OnPointerMove(
             PointerMoveEvent evt
         )
         {
-            if (!dragging)
-            {
-                return;
-            }
-
-
-            if (evt.pointerId !=
+            if (!dragging ||
+                evt.pointerId !=
                 capturedPointerId)
             {
                 return;
             }
 
 
-            bool hasCapture =
-                PointerCaptureHelper
+            if (!PointerCaptureHelper
                     .HasPointerCapture(
                         this,
                         capturedPointerId
-                    );
-
-
-            if (!hasCapture)
+                    ))
             {
                 return;
             }
 
 
-            Vector2 delta =
+            Vector2 deltaScreen =
                 evt.position -
                 (Vector3)dragStartPointer;
 
 
             Vector2 position =
-                dragStartPosition +
-                delta;
+                dragStartPosition
+                +
+                deltaScreen /
+                owner.Zoom;
 
 
-            position.x =
-                Mathf.Max(
-                    0f,
-                    position.x
-                );
-
-
-            position.y =
-                Mathf.Max(
-                    0f,
-                    position.y
-                );
-
-
+            /*
+             * No clamping.
+             * The graph world is intentionally unbounded.
+             */
             context.MoveNodeContinuous(
-                node,
+                Node,
                 position
             );
 
@@ -1272,10 +2610,6 @@ public sealed class LevelGraphUI
             evt.StopPropagation();
         }
 
-
-        // =====================================================
-        // Pointer Up / Cancel
-        // =====================================================
 
         private void OnPointerUp(
             PointerUpEvent evt
@@ -1300,14 +2634,11 @@ public sealed class LevelGraphUI
             PointerCancelEvent evt
         )
         {
-            if (evt.pointerId !=
+            if (evt.pointerId ==
                 capturedPointerId)
             {
-                return;
+                EndDrag();
             }
-
-
-            EndDrag();
         }
 
 
@@ -1324,10 +2655,6 @@ public sealed class LevelGraphUI
         }
 
 
-        // =====================================================
-        // End Drag
-        // =====================================================
-
         private void EndDrag()
         {
             dragging =
@@ -1341,15 +2668,11 @@ public sealed class LevelGraphUI
             }
 
 
-            bool hasCapture =
-                PointerCaptureHelper
+            if (PointerCaptureHelper
                     .HasPointerCapture(
                         this,
                         capturedPointerId
-                    );
-
-
-            if (hasCapture)
+                    ))
             {
                 PointerCaptureHelper
                     .ReleasePointer(

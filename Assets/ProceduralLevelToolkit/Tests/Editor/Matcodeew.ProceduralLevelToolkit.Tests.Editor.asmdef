@@ -1,0 +1,22 @@
+{
+    "name": "Matcodeew.ProceduralLevelToolkit.Tests.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:f21e0642dd286c845823b14bac2a3168",
+        "GUID:ed1c9e73b74ae58418ff56b341baa9af"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false,
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
+}

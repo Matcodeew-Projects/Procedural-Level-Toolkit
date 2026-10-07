@@ -279,6 +279,18 @@ public static class RoomValidator
                     $"Socket '{socket.Id}' is outside the Room at {socket.Position}."
                 );
             }
+            else if (!room.IsSocketDirectionValidForPosition(
+                         socket.Position,
+                         socket.Direction
+                     ))
+            {
+                result.Add(
+                    RoomValidationSeverity.Error,
+                    "SOCKET_BOUNDARY",
+                    $"Socket '{socket.Id}' at {socket.Position} does not match its {socket.Direction} boundary. " +
+                    "North sockets must be on the top row, South on the bottom row, East on the right column and West on the left column."
+                );
+            }
 
             if (socket.Width <= 0)
             {

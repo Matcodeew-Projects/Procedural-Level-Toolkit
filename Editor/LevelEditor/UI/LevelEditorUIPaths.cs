@@ -1,11 +1,25 @@
 public static class LevelEditorUIPaths
 {
+    public const string PackageRoot =
+        "Packages/com.matcodeew.procedural-level-toolkit/";
+
     public const string Root =
-        "Assets/ProceduralLevelToolkit/Editor/LevelEditor/UI/";
+        PackageRoot +
+        "Editor/LevelEditor/UI/";
+
+
+    // =========================================================
+    // UXML
+    // =========================================================
 
     public const string LevelEditor =
         Root +
         "UXML/LevelEditor.uxml";
+
+
+    // =========================================================
+    // USS
+    // =========================================================
 
     public const string LevelEditorStyle =
         Root +

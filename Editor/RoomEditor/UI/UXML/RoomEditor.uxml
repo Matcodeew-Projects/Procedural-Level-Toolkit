@@ -1,0 +1,325 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
+         editor-extension-mode="True">
+
+    <!-- ===================================================== -->
+    <!-- Templates                                             -->
+    <!-- ===================================================== -->
+
+    <ui:Template
+        name="RoomEditorToolbar"
+        src="Toolbar.uxml" />
+
+    <ui:Template
+        name="RoomEditorToolPalette"
+        src="ToolPalette.uxml" />
+
+    <ui:Template
+        name="RoomEditorLayersPanel"
+        src="LayersPanel.uxml" />
+
+    <ui:Template
+        name="RoomEditorInspectorPanel"
+        src="InspectorPanel.uxml" />
+
+    <ui:Template
+        name="RoomEditorPreviewPanel"
+        src="PreviewPanel.uxml" />
+
+
+    <!-- ===================================================== -->
+    <!-- Styles                                                -->
+    <!-- ===================================================== -->
+
+    <ui:Style
+        src="../USS/RoomEditorCommon.uss" />
+
+    <ui:Style
+        src="../USS/RoomEditorPanels.uss" />
+
+    <ui:Style
+        src="../USS/RoomEditor.uss" />
+
+
+    <!-- ===================================================== -->
+    <!-- Root                                                  -->
+    <!-- ===================================================== -->
+
+    <ui:VisualElement
+        name="room-editor-root"
+        class="room-editor">
+
+
+        <!-- ================================================= -->
+        <!-- Toolbar                                           -->
+        <!-- ================================================= -->
+
+        <ui:Instance
+            template="RoomEditorToolbar" />
+
+
+        <!-- ================================================= -->
+        <!-- Editor Body                                       -->
+        <!-- ================================================= -->
+
+        <ui:VisualElement
+            name="room-editor-body"
+            class="room-editor__body">
+
+
+            <!-- ============================================= -->
+            <!-- Left Sidebar / Main Area                      -->
+            <!-- ============================================= -->
+            <!--
+                Left pane:
+                    Tools + Layers
+
+                Right pane:
+                    Grid workspace + Inspector/Preview
+            -->
+
+            <ui:TwoPaneSplitView
+                name="left-main-split"
+                class="room-editor__split"
+                fixed-pane-index="0"
+                fixed-pane-initial-dimension="230"
+                orientation="Horizontal">
+
+
+                <!-- ========================================= -->
+                <!-- Left Sidebar                              -->
+                <!-- ========================================= -->
+
+                <ui:VisualElement
+                    name="left-sidebar"
+                    class="sidebar sidebar--left">
+
+                    <ui:Instance
+                        template="RoomEditorToolPalette" />
+
+                    <ui:Instance
+                        template="RoomEditorLayersPanel" />
+
+                </ui:VisualElement>
+
+
+                <!-- ========================================= -->
+                <!-- Workspace / Right Sidebar                 -->
+                <!-- ========================================= -->
+
+                <ui:TwoPaneSplitView
+                    name="workspace-right-split"
+                    class="room-editor__split"
+                    fixed-pane-index="1"
+                    fixed-pane-initial-dimension="300"
+                    orientation="Horizontal">
+
+
+                    <!-- ===================================== -->
+                    <!-- Grid Workspace                        -->
+                    <!-- ===================================== -->
+
+                    <ui:VisualElement
+                        name="workspace"
+                        class="workspace">
+
+
+                        <!-- Workspace Toolbar -->
+
+                        <ui:VisualElement
+                            name="workspace-toolbar"
+                            class="workspace__toolbar">
+
+
+                            <ui:VisualElement
+                                class="workspace__info">
+
+                                <ui:Label
+                                    text="GRID"
+                                    class="eyebrow" />
+
+                                <ui:Label
+                                    name="grid-size-label"
+                                    text="20 × 20"
+                                    class="workspace__grid-size" />
+
+                                <ui:Label
+                                    name="active-layer-label"
+                                    text="Layer: Base"
+                                    class="text-muted" />
+
+                            </ui:VisualElement>
+
+
+                            <ui:VisualElement
+                                class="spacer" />
+
+
+                            <ui:Button
+                                name="grid-fit-button"
+                                text="Fit"
+                                class="button button--compact" />
+
+                            <ui:Button
+                                name="grid-zoom-out-button"
+                                text="−"
+                                class="button button--square" />
+
+                            <ui:Label
+                                name="grid-zoom-label"
+                                text="100%"
+                                class="zoom-label" />
+
+                            <ui:Button
+                                name="grid-zoom-in-button"
+                                text="+"
+                                class="button button--square" />
+
+                        </ui:VisualElement>
+
+
+                        <!-- Grid Viewport -->
+
+                        <ui:VisualElement
+                            name="grid-viewport"
+                            class="grid-viewport">
+
+
+                            <ui:VisualElement
+                                name="room-grid-canvas"
+                                class="room-grid-canvas"
+                                focusable="true" />
+
+
+                            <ui:VisualElement
+                                name="grid-empty-state"
+                                class="grid-empty-state"
+                                picking-mode="Ignore">
+
+                                <ui:Label
+                                    text="ROOM GRID"
+                                    class="grid-empty-state__title" />
+
+                                <ui:Label
+                                    text="The room cells will be drawn here by GridCanvasUI."
+                                    class="text-muted text-centered" />
+
+                            </ui:VisualElement>
+
+                        </ui:VisualElement>
+
+                    </ui:VisualElement>
+
+
+                    <!-- ===================================== -->
+                    <!-- Right Sidebar                         -->
+                    <!-- ===================================== -->
+
+                    <ui:VisualElement
+                        name="right-sidebar"
+                        class="sidebar sidebar--right">
+
+
+                        <!--
+                            IMPORTANT:
+
+                            Inspector is the flexible upper pane.
+
+                            Preview 3D is the fixed lower pane.
+
+                            This means the default layout is:
+
+                            ┌─────────────────────┐
+                            │                     │
+                            │      Inspector      │
+                            │                     │
+                            ├─────────────────────┤
+                            │     3D Preview      │
+                            │                     │
+                            └─────────────────────┘
+
+                            The separator remains draggable.
+
+                            fixed-pane-index = 1
+                            means the SECOND child is the fixed pane.
+
+                            Therefore the Preview receives a controlled
+                            default height instead of taking most of the
+                            sidebar.
+                        -->
+
+                        <ui:TwoPaneSplitView
+                            name="inspector-preview-split"
+                            class="right-sidebar__split"
+                            fixed-pane-index="1"
+                            fixed-pane-initial-dimension="280"
+                            orientation="Vertical">
+
+
+                            <!-- ================================= -->
+                            <!-- Inspector                         -->
+                            <!-- ================================= -->
+
+                            <ui:VisualElement
+                                name="inspector-pane"
+                                class="right-sidebar__pane right-sidebar__pane--inspector">
+
+                                <ui:Instance
+                                    template="RoomEditorInspectorPanel" />
+
+                            </ui:VisualElement>
+
+
+                            <!-- ================================= -->
+                            <!-- 3D Preview                        -->
+                            <!-- ================================= -->
+
+                            <ui:VisualElement
+                                name="preview-pane"
+                                class="right-sidebar__pane right-sidebar__pane--preview">
+
+                                <ui:Instance
+                                    template="RoomEditorPreviewPanel" />
+
+                            </ui:VisualElement>
+
+
+                        </ui:TwoPaneSplitView>
+
+                    </ui:VisualElement>
+
+
+                </ui:TwoPaneSplitView>
+
+            </ui:TwoPaneSplitView>
+
+        </ui:VisualElement>
+
+
+        <!-- ================================================= -->
+        <!-- Status Bar                                        -->
+        <!-- ================================================= -->
+
+        <ui:VisualElement
+            name="status-bar"
+            class="status-bar">
+
+            <ui:Label
+                name="status-message-label"
+                text="Ready"
+                class="text-muted" />
+
+            <ui:VisualElement
+                class="spacer" />
+
+            <ui:Label
+                name="cursor-cell-label"
+                text="Cell: —, —"
+                class="text-muted" />
+
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+
+</ui:UXML>

@@ -1,0 +1,220 @@
+<ui:UXML
+    xmlns:ui="UnityEngine.UIElements"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    editor-extension-mode="True">
+
+    <ui:VisualElement
+        name="inspector-panel"
+        class="panel panel--inspector">
+
+        <ui:VisualElement
+            class="panel__header">
+
+            <ui:Label
+                text="Inspector"
+                class="panel__title" />
+
+            <ui:Label
+                name="selection-kind-label"
+                text="No Room"
+                class="panel__meta" />
+
+        </ui:VisualElement>
+
+
+        <ui:ScrollView
+            name="inspector-scroll"
+            class="panel__body inspector-scroll">
+
+            <!-- ============================================= -->
+            <!-- Empty                                         -->
+            <!-- ============================================= -->
+
+            <ui:VisualElement
+                name="empty-selection-inspector"
+                class="inspector-state">
+
+                <ui:Label
+                    text="Create or load a RoomDefinition to start editing."
+                    class="text-muted text-centered inspector-empty-text" />
+
+            </ui:VisualElement>
+
+
+            <!-- ============================================= -->
+            <!-- Room                                          -->
+            <!-- ============================================= -->
+
+            <ui:VisualElement
+                name="room-inspector"
+                class="inspector-state hidden">
+
+                <ui:Label
+                    text="Room Grid"
+                    class="section-title" />
+
+                <ui:IntegerField
+                    name="room-width-field"
+                    label="Width"
+                    value="20"
+                    class="field" />
+
+                <ui:IntegerField
+                    name="room-height-field"
+                    label="Height"
+                    value="20"
+                    class="field" />
+
+                <ui:Button
+                    name="resize-room-button"
+                    text="Resize Room"
+                    class="button button--compact" />
+
+            </ui:VisualElement>
+
+
+            <!-- ============================================= -->
+            <!-- Cell                                          -->
+            <!-- ============================================= -->
+
+            <ui:VisualElement
+                name="cell-inspector"
+                class="inspector-state hidden">
+
+                <ui:Label
+                    text="Cell"
+                    class="section-title" />
+
+                <ui:Label
+                    name="cell-position-label"
+                    text="Position: —, —"
+                    class="readout" />
+
+                <ui:DropdownField
+                    name="cell-type-field"
+                    label="Type"
+                    class="field" />
+
+                <ui:Toggle
+                    name="cell-enabled-toggle"
+                    label="Enabled"
+                    value="true"
+                    class="field" />
+
+            </ui:VisualElement>
+
+
+            <!-- ============================================= -->
+            <!-- Multiple cells                                -->
+            <!-- ============================================= -->
+
+            <ui:VisualElement
+                name="multi-cell-inspector"
+                class="inspector-state hidden">
+
+                <ui:Label
+                    text="Multiple Cells"
+                    class="section-title" />
+
+                <ui:Label
+                    name="multi-cell-count-label"
+                    text="Selected: 0"
+                    class="readout" />
+
+                <ui:Label
+                    text="Use the Group tool to create a CellGroup from cells."
+                    class="text-muted" />
+
+            </ui:VisualElement>
+
+
+            <!-- ============================================= -->
+            <!-- Group                                         -->
+            <!-- ============================================= -->
+
+            <ui:VisualElement
+                name="group-inspector"
+                class="inspector-state hidden">
+
+                <ui:Label
+                    text="Cell Group"
+                    class="section-title" />
+
+                <ui:TextField
+                    name="group-id-field"
+                    label="Id"
+                    class="field" />
+
+                <ui:TextField
+                    name="group-label-field"
+                    label="Label"
+                    class="field" />
+
+                <ui:Label
+                    name="group-cell-count-label"
+                    text="Cells: 0"
+                    class="readout" />
+
+                <ui:Button
+                    name="clear-group-button"
+                    text="Delete Group"
+                    class="button button--compact button--danger" />
+
+            </ui:VisualElement>
+
+
+            <!-- ============================================= -->
+            <!-- Socket                                        -->
+            <!-- ============================================= -->
+
+            <ui:VisualElement
+                name="socket-inspector"
+                class="inspector-state hidden">
+
+                <ui:Label
+                    text="Room Socket"
+                    class="section-title" />
+
+                <ui:Label
+                    name="socket-position-label"
+                    text="Position: —, —"
+                    class="readout" />
+
+                <ui:TextField
+                    name="socket-id-field"
+                    label="Id"
+                    class="field" />
+
+                <ui:DropdownField
+                    name="socket-direction-field"
+                    label="Direction"
+                    class="field" />
+
+                <ui:DropdownField
+                    name="socket-role-field"
+                    label="Role"
+                    class="field" />
+
+                <ui:TextField
+                    name="socket-type-field"
+                    label="Type"
+                    class="field" />
+
+                <ui:IntegerField
+                    name="socket-width-field"
+                    label="Width"
+                    value="1"
+                    class="field" />
+
+                <ui:Button
+                    name="remove-socket-button"
+                    text="Remove Socket"
+                    class="button button--compact button--danger" />
+
+            </ui:VisualElement>
+
+        </ui:ScrollView>
+
+    </ui:VisualElement>
+
+</ui:UXML>

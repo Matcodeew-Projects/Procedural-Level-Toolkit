@@ -1,0 +1,356 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b4fc0ac7f61a8341a0fa9776f88d717, type: 3}
+  m_Name: DefaultLevelSample
+  m_EditorClassIdentifier: Matcodeew.ProceduralLevelToolkit.Runtime::LevelDefinition
+  id: 7738400e915f4696a617530a4ab7b134
+  levelName: DefaultLevelSample
+  description: "LevelDefault est le niveau de r\xE9f\xE9rence du ProceduralLevelToolkit, con\xE7u pour valider le fonctionnement global du Level Editor. Il combine plusieurs salles et types de couloirs, dont des corridors droits et en L, avec diff\xE9rentes orientations et plusieurs embranchements. Ce niveau sert principalement \xE0 tester la connexion des sockets, le placement automatique des modules, les rotations, la d\xE9tection des chevauchements ainsi que la coh\xE9rence entre le graphe, le layout 2D et la preview 3D."
+  graph:
+    nodes:
+    - id: b930653bd65c4f69bdb95cd12948bb2b
+      module: {fileID: 11400000, guid: 028d31d2acad1fe43b3a5bb210daa2be, type: 2}
+      room: {fileID: 11400000, guid: 3df3af51570d6cf4ab3b46e07cd39758, type: 2}
+      graphPosition: {x: 466, y: 175}
+    - id: 79d554c3dec54b15a70fff1c4c6b3aee
+      module: {fileID: 11400000, guid: 65a605e4745a2a446bed977ce3905a08, type: 2}
+      room: {fileID: 11400000, guid: 92bb93675284f0b4eaabdfaab5855a83, type: 2}
+      graphPosition: {x: 697, y: 175}
+    - id: 4730cc8dd65947cea4ea93e0cfa52bf4
+      module: {fileID: 11400000, guid: 028d31d2acad1fe43b3a5bb210daa2be, type: 2}
+      room: {fileID: 11400000, guid: 3df3af51570d6cf4ab3b46e07cd39758, type: 2}
+      graphPosition: {x: -128, y: 203}
+    - id: d319e75e0f3f439f9b429defa595a9c3
+      module: {fileID: 11400000, guid: c454967b0f20e4140b260b5b70015cf9, type: 2}
+      room: {fileID: 11400000, guid: 8cb27969ac56b69468d60db747e9278e, type: 2}
+      graphPosition: {x: -427.99997, y: 183.00006}
+    - id: 9783ef32428a4dcaab306b42541034b1
+      module: {fileID: 11400000, guid: d52038ddd74be0a4fa93bd99a4cb1120, type: 2}
+      room: {fileID: 11400000, guid: f7eec66d9df954f45bbe0dc8d1f5523e, type: 2}
+      graphPosition: {x: 436.87164, y: 576.371}
+    - id: 90e40ae05c0545f69edfc91028b0ba80
+      module: {fileID: 11400000, guid: 028d31d2acad1fe43b3a5bb210daa2be, type: 2}
+      room: {fileID: 11400000, guid: 3df3af51570d6cf4ab3b46e07cd39758, type: 2}
+      graphPosition: {x: 963.76215, y: 612.43854}
+    - id: f4e85cb8903b486fa6d1e6158695bf6e
+      module: {fileID: 11400000, guid: d52038ddd74be0a4fa93bd99a4cb1120, type: 2}
+      room: {fileID: 11400000, guid: f7eec66d9df954f45bbe0dc8d1f5523e, type: 2}
+      graphPosition: {x: 729.213, y: 615.5686}
+    - id: 0aa912e28e9f44958dce89c234fd0fce
+      module: {fileID: 11400000, guid: 19f16738cfa1dff4a8cf68b5820e1122, type: 2}
+      room: {fileID: 11400000, guid: bbc74260888075d4c8f46d69abf1746f, type: 2}
+      graphPosition: {x: 1246.793, y: 603.50116}
+    - id: 4b4e9afa2f0b4921b0338e5230234c3f
+      module: {fileID: 11400000, guid: 19f16738cfa1dff4a8cf68b5820e1122, type: 2}
+      room: {fileID: 11400000, guid: bbc74260888075d4c8f46d69abf1746f, type: 2}
+      graphPosition: {x: 1462.4409, y: 228.20892}
+    - id: 49a35a2d2cbe47aab012c126035f1542
+      module: {fileID: 11400000, guid: d52038ddd74be0a4fa93bd99a4cb1120, type: 2}
+      room: {fileID: 11400000, guid: f7eec66d9df954f45bbe0dc8d1f5523e, type: 2}
+      graphPosition: {x: 1260.9377, y: 16.706753}
+    - id: b29ca191eea54e4799265e4f2dcb367e
+      module: {fileID: 11400000, guid: 19f16738cfa1dff4a8cf68b5820e1122, type: 2}
+      room: {fileID: 11400000, guid: bbc74260888075d4c8f46d69abf1746f, type: 2}
+      graphPosition: {x: 1537.3588, y: 20.262844}
+    - id: a840eeeffc834915b8662629071c5758
+      module: {fileID: 11400000, guid: 19f16738cfa1dff4a8cf68b5820e1122, type: 2}
+      room: {fileID: 11400000, guid: bbc74260888075d4c8f46d69abf1746f, type: 2}
+      graphPosition: {x: 1426.8043, y: 424.32635}
+    - id: bdd6fae57f9d44349d510a7d8d528034
+      module: {fileID: 11400000, guid: 028d31d2acad1fe43b3a5bb210daa2be, type: 2}
+      room: {fileID: 11400000, guid: 3df3af51570d6cf4ab3b46e07cd39758, type: 2}
+      graphPosition: {x: 1115.733, y: 225.83978}
+    - id: b4652047bada4897949df720da28e4b2
+      module: {fileID: 11400000, guid: 028d31d2acad1fe43b3a5bb210daa2be, type: 2}
+      room: {fileID: 11400000, guid: 3df3af51570d6cf4ab3b46e07cd39758, type: 2}
+      graphPosition: {x: 971.0712, y: 10.092575}
+    - id: 316fc73479514595832fe693987ea7db
+      module: {fileID: 11400000, guid: d52038ddd74be0a4fa93bd99a4cb1120, type: 2}
+      room: {fileID: 11400000, guid: f7eec66d9df954f45bbe0dc8d1f5523e, type: 2}
+      graphPosition: {x: 967.4834, y: 421.7618}
+    - id: e3cc4549ac794f71ae32673e7a62420c
+      module: {fileID: 11400000, guid: d52038ddd74be0a4fa93bd99a4cb1120, type: 2}
+      room: {fileID: 11400000, guid: f7eec66d9df954f45bbe0dc8d1f5523e, type: 2}
+      graphPosition: {x: 1204.1157, y: 421.69275}
+    - id: 5113d40487114f2e9fd902e1db507840
+      module: {fileID: 11400000, guid: 7a6c5fb9bc22b6d4ab0bd5f2a367dd15, type: 2}
+      room: {fileID: 11400000, guid: a7b734bf33e9a6240981e401d739686b, type: 2}
+      graphPosition: {x: 163.61487, y: 265.97638}
+    connections:
+    - id: 8050913b162d451cbc15fcd4ab38e647
+      fromNodeId: b930653bd65c4f69bdb95cd12948bb2b
+      toNodeId: 79d554c3dec54b15a70fff1c4c6b3aee
+      fromSocketId: 17867d820cd94de5b8044afa444de26e
+      toSocketId: 00207a258368413cb975f51ef22db845
+    - id: 7cacce99ebf448b883f4b3680f93a48a
+      fromNodeId: d319e75e0f3f439f9b429defa595a9c3
+      toNodeId: 4730cc8dd65947cea4ea93e0cfa52bf4
+      fromSocketId: 5fa6e8963ffd4038bb854c1544f5851f
+      toSocketId: 72caa2ea52e34f02be4743d8a3f10c47
+    - id: 93316a33e83346c396c7bb23976496c0
+      fromNodeId: 9783ef32428a4dcaab306b42541034b1
+      toNodeId: f4e85cb8903b486fa6d1e6158695bf6e
+      fromSocketId: e865ffe5cd394e8e8f172f062ec7a0e2
+      toSocketId: e865ffe5cd394e8e8f172f062ec7a0e2
+    - id: 7e8748e97446414c8014f543babcda21
+      fromNodeId: f4e85cb8903b486fa6d1e6158695bf6e
+      toNodeId: 90e40ae05c0545f69edfc91028b0ba80
+      fromSocketId: 212e7f6c13a84a9fbdee8c63feb0d8e5
+      toSocketId: 72caa2ea52e34f02be4743d8a3f10c47
+    - id: 77736d146fed4350b627896eb80f4deb
+      fromNodeId: 90e40ae05c0545f69edfc91028b0ba80
+      toNodeId: 0aa912e28e9f44958dce89c234fd0fce
+      fromSocketId: 17867d820cd94de5b8044afa444de26e
+      toSocketId: 700b9de1370145bbb44266294abab613
+    - id: 0491dd409ba34f3da296520f70ab4c28
+      fromNodeId: 49a35a2d2cbe47aab012c126035f1542
+      toNodeId: b29ca191eea54e4799265e4f2dcb367e
+      fromSocketId: 212e7f6c13a84a9fbdee8c63feb0d8e5
+      toSocketId: 700b9de1370145bbb44266294abab613
+    - id: 95f661aa23704b88b9db4a9b76fe7db8
+      fromNodeId: 79d554c3dec54b15a70fff1c4c6b3aee
+      toNodeId: bdd6fae57f9d44349d510a7d8d528034
+      fromSocketId: 16f3d745c6f0404b9e8f1e028c97fad1
+      toSocketId: 72caa2ea52e34f02be4743d8a3f10c47
+    - id: 50079ee4ba354036bbf95397d0cb5011
+      fromNodeId: bdd6fae57f9d44349d510a7d8d528034
+      toNodeId: 4b4e9afa2f0b4921b0338e5230234c3f
+      fromSocketId: 17867d820cd94de5b8044afa444de26e
+      toSocketId: 700b9de1370145bbb44266294abab613
+    - id: 0b4c215e4d7f4b6bb451ca6b1a2e4767
+      fromNodeId: 79d554c3dec54b15a70fff1c4c6b3aee
+      toNodeId: b4652047bada4897949df720da28e4b2
+      fromSocketId: ab660824e22c4565852791b2b6ff7a1f
+      toSocketId: 72caa2ea52e34f02be4743d8a3f10c47
+    - id: 21f1dc24bb1c44a2b97d78d64d2f6bf2
+      fromNodeId: b4652047bada4897949df720da28e4b2
+      toNodeId: 49a35a2d2cbe47aab012c126035f1542
+      fromSocketId: 17867d820cd94de5b8044afa444de26e
+      toSocketId: e865ffe5cd394e8e8f172f062ec7a0e2
+    - id: d1f40ba6fa884b73b1d7052007e07d9e
+      fromNodeId: 79d554c3dec54b15a70fff1c4c6b3aee
+      toNodeId: 316fc73479514595832fe693987ea7db
+      fromSocketId: 7e630d126da64e9b87766629673b2972
+      toSocketId: 212e7f6c13a84a9fbdee8c63feb0d8e5
+    - id: 2a42f43df7e44d0c97556437aee997b7
+      fromNodeId: 316fc73479514595832fe693987ea7db
+      toNodeId: e3cc4549ac794f71ae32673e7a62420c
+      fromSocketId: e865ffe5cd394e8e8f172f062ec7a0e2
+      toSocketId: e865ffe5cd394e8e8f172f062ec7a0e2
+    - id: d24409e737264a84b030a0edd314f9af
+      fromNodeId: e3cc4549ac794f71ae32673e7a62420c
+      toNodeId: a840eeeffc834915b8662629071c5758
+      fromSocketId: 212e7f6c13a84a9fbdee8c63feb0d8e5
+      toSocketId: 700b9de1370145bbb44266294abab613
+    - id: 191f5756d69a4cb29650c131f04e2c35
+      fromNodeId: 4730cc8dd65947cea4ea93e0cfa52bf4
+      toNodeId: 5113d40487114f2e9fd902e1db507840
+      fromSocketId: 17867d820cd94de5b8044afa444de26e
+      toSocketId: c7274fc8c71c492aa973e263098486a2
+    - id: 2d899b5df62d45e7b72114075ac8f2a6
+      fromNodeId: 5113d40487114f2e9fd902e1db507840
+      toNodeId: b930653bd65c4f69bdb95cd12948bb2b
+      fromSocketId: 8240da6516e941ac96e5ef72e69755bc
+      toSocketId: 72caa2ea52e34f02be4743d8a3f10c47
+    - id: 18d80ec721514bcda1c46c4a6ee2e50e
+      fromNodeId: 5113d40487114f2e9fd902e1db507840
+      toNodeId: 9783ef32428a4dcaab306b42541034b1
+      fromSocketId: bd93061556f64c6e8c04502ef0bd7474
+      toSocketId: 212e7f6c13a84a9fbdee8c63feb0d8e5
+  spatialLayout:
+    isSolved: 1
+    modules:
+    - nodeId: b930653bd65c4f69bdb95cd12948bb2b
+      room: {fileID: 11400000, guid: 3df3af51570d6cf4ab3b46e07cd39758, type: 2}
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      quarterTurns: 0
+    - nodeId: 79d554c3dec54b15a70fff1c4c6b3aee
+      room: {fileID: 11400000, guid: 92bb93675284f0b4eaabdfaab5855a83, type: 2}
+      position: {x: 0, y: 0, z: -16}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      quarterTurns: 0
+    - nodeId: 5113d40487114f2e9fd902e1db507840
+      room: {fileID: 11400000, guid: a7b734bf33e9a6240981e401d739686b, type: 2}
+      position: {x: 0, y: 0, z: 11}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      quarterTurns: 0
+    - nodeId: bdd6fae57f9d44349d510a7d8d528034
+      room: {fileID: 11400000, guid: 3df3af51570d6cf4ab3b46e07cd39758, type: 2}
+      position: {x: 0, y: 0, z: -32}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      quarterTurns: 0
+    - nodeId: b4652047bada4897949df720da28e4b2
+      room: {fileID: 11400000, guid: 3df3af51570d6cf4ab3b46e07cd39758, type: 2}
+      position: {x: -16, y: 0, z: -16}
+      rotation: {x: 0, y: 0.70710677, z: 0, w: 0.70710677}
+      quarterTurns: 1
+    - nodeId: 316fc73479514595832fe693987ea7db
+      room: {fileID: 11400000, guid: f7eec66d9df954f45bbe0dc8d1f5523e, type: 2}
+      position: {x: 16, y: 0, z: -19}
+      rotation: {x: 0, y: 0.70710677, z: 0, w: 0.70710677}
+      quarterTurns: 1
+    - nodeId: 4730cc8dd65947cea4ea93e0cfa52bf4
+      room: {fileID: 11400000, guid: 3df3af51570d6cf4ab3b46e07cd39758, type: 2}
+      position: {x: -11, y: 0, z: 14}
+      rotation: {x: 0, y: 0.70710677, z: 0, w: -0.70710677}
+      quarterTurns: 3
+    - nodeId: 9783ef32428a4dcaab306b42541034b1
+      room: {fileID: 11400000, guid: f7eec66d9df954f45bbe0dc8d1f5523e, type: 2}
+      position: {x: 11, y: 0, z: 11}
+      rotation: {x: 0, y: 0.70710677, z: 0, w: 0.70710677}
+      quarterTurns: 1
+    - nodeId: 4b4e9afa2f0b4921b0338e5230234c3f
+      room: {fileID: 11400000, guid: bbc74260888075d4c8f46d69abf1746f, type: 2}
+      position: {x: 0, y: 0, z: -48}
+      rotation: {x: 0, y: 1, z: 0, w: -0.00000004371139}
+      quarterTurns: 2
+    - nodeId: 49a35a2d2cbe47aab012c126035f1542
+      room: {fileID: 11400000, guid: f7eec66d9df954f45bbe0dc8d1f5523e, type: 2}
+      position: {x: -27, y: 0, z: -19}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      quarterTurns: 0
+    - nodeId: e3cc4549ac794f71ae32673e7a62420c
+      room: {fileID: 11400000, guid: f7eec66d9df954f45bbe0dc8d1f5523e, type: 2}
+      position: {x: 22, y: 0, z: -30}
+      rotation: {x: 0, y: 0.70710677, z: 0, w: -0.70710677}
+      quarterTurns: 3
+    - nodeId: d319e75e0f3f439f9b429defa595a9c3
+      room: {fileID: 11400000, guid: 8cb27969ac56b69468d60db747e9278e, type: 2}
+      position: {x: -22, y: 0, z: 14}
+      rotation: {x: 0, y: 0.70710677, z: 0, w: 0.70710677}
+      quarterTurns: 1
+    - nodeId: f4e85cb8903b486fa6d1e6158695bf6e
+      room: {fileID: 11400000, guid: f7eec66d9df954f45bbe0dc8d1f5523e, type: 2}
+      position: {x: 17, y: 0, z: 0}
+      rotation: {x: 0, y: 0.70710677, z: 0, w: -0.70710677}
+      quarterTurns: 3
+    - nodeId: b29ca191eea54e4799265e4f2dcb367e
+      room: {fileID: 11400000, guid: bbc74260888075d4c8f46d69abf1746f, type: 2}
+      position: {x: -30, y: 0, z: -35}
+      rotation: {x: 0, y: 1, z: 0, w: -0.00000004371139}
+      quarterTurns: 2
+    - nodeId: a840eeeffc834915b8662629071c5758
+      room: {fileID: 11400000, guid: bbc74260888075d4c8f46d69abf1746f, type: 2}
+      position: {x: 38, y: 0, z: -33}
+      rotation: {x: 0, y: 0.70710677, z: 0, w: 0.70710677}
+      quarterTurns: 1
+    - nodeId: 90e40ae05c0545f69edfc91028b0ba80
+      room: {fileID: 11400000, guid: 3df3af51570d6cf4ab3b46e07cd39758, type: 2}
+      position: {x: 28, y: 0, z: -3}
+      rotation: {x: 0, y: 0.70710677, z: 0, w: -0.70710677}
+      quarterTurns: 3
+    - nodeId: 0aa912e28e9f44958dce89c234fd0fce
+      room: {fileID: 11400000, guid: bbc74260888075d4c8f46d69abf1746f, type: 2}
+      position: {x: 44, y: 0, z: -3}
+      rotation: {x: 0, y: 0.70710677, z: 0, w: 0.70710677}
+      quarterTurns: 1
+    socketConnections:
+    - graphConnectionId: 8050913b162d451cbc15fcd4ab38e647
+      fromNodeId: b930653bd65c4f69bdb95cd12948bb2b
+      fromSocketId: 17867d820cd94de5b8044afa444de26e
+      toNodeId: 79d554c3dec54b15a70fff1c4c6b3aee
+      toSocketId: 00207a258368413cb975f51ef22db845
+      worldPosition: {x: 0, y: 0, z: -5.5}
+    - graphConnectionId: 7cacce99ebf448b883f4b3680f93a48a
+      fromNodeId: d319e75e0f3f439f9b429defa595a9c3
+      fromSocketId: 5fa6e8963ffd4038bb854c1544f5851f
+      toNodeId: 4730cc8dd65947cea4ea93e0cfa52bf4
+      toSocketId: 72caa2ea52e34f02be4743d8a3f10c47
+      worldPosition: {x: -16.5, y: 0, z: 14}
+    - graphConnectionId: 93316a33e83346c396c7bb23976496c0
+      fromNodeId: 9783ef32428a4dcaab306b42541034b1
+      fromSocketId: e865ffe5cd394e8e8f172f062ec7a0e2
+      toNodeId: f4e85cb8903b486fa6d1e6158695bf6e
+      toSocketId: e865ffe5cd394e8e8f172f062ec7a0e2
+      worldPosition: {x: 14, y: 0, z: 5.5}
+    - graphConnectionId: 7e8748e97446414c8014f543babcda21
+      fromNodeId: f4e85cb8903b486fa6d1e6158695bf6e
+      fromSocketId: 212e7f6c13a84a9fbdee8c63feb0d8e5
+      toNodeId: 90e40ae05c0545f69edfc91028b0ba80
+      toSocketId: 72caa2ea52e34f02be4743d8a3f10c47
+      worldPosition: {x: 22.5, y: 0, z: -3}
+    - graphConnectionId: 77736d146fed4350b627896eb80f4deb
+      fromNodeId: 90e40ae05c0545f69edfc91028b0ba80
+      fromSocketId: 17867d820cd94de5b8044afa444de26e
+      toNodeId: 0aa912e28e9f44958dce89c234fd0fce
+      toSocketId: 700b9de1370145bbb44266294abab613
+      worldPosition: {x: 33.5, y: 0, z: -3}
+    - graphConnectionId: 0491dd409ba34f3da296520f70ab4c28
+      fromNodeId: 49a35a2d2cbe47aab012c126035f1542
+      fromSocketId: 212e7f6c13a84a9fbdee8c63feb0d8e5
+      toNodeId: b29ca191eea54e4799265e4f2dcb367e
+      toSocketId: 700b9de1370145bbb44266294abab613
+      worldPosition: {x: -30, y: 0, z: -24.5}
+    - graphConnectionId: 95f661aa23704b88b9db4a9b76fe7db8
+      fromNodeId: 79d554c3dec54b15a70fff1c4c6b3aee
+      fromSocketId: 16f3d745c6f0404b9e8f1e028c97fad1
+      toNodeId: bdd6fae57f9d44349d510a7d8d528034
+      toSocketId: 72caa2ea52e34f02be4743d8a3f10c47
+      worldPosition: {x: 0, y: 0, z: -26.5}
+    - graphConnectionId: 50079ee4ba354036bbf95397d0cb5011
+      fromNodeId: bdd6fae57f9d44349d510a7d8d528034
+      fromSocketId: 17867d820cd94de5b8044afa444de26e
+      toNodeId: 4b4e9afa2f0b4921b0338e5230234c3f
+      toSocketId: 700b9de1370145bbb44266294abab613
+      worldPosition: {x: 0, y: 0, z: -37.5}
+    - graphConnectionId: 0b4c215e4d7f4b6bb451ca6b1a2e4767
+      fromNodeId: 79d554c3dec54b15a70fff1c4c6b3aee
+      fromSocketId: ab660824e22c4565852791b2b6ff7a1f
+      toNodeId: b4652047bada4897949df720da28e4b2
+      toSocketId: 72caa2ea52e34f02be4743d8a3f10c47
+      worldPosition: {x: -10.5, y: 0, z: -16}
+    - graphConnectionId: 21f1dc24bb1c44a2b97d78d64d2f6bf2
+      fromNodeId: b4652047bada4897949df720da28e4b2
+      fromSocketId: 17867d820cd94de5b8044afa444de26e
+      toNodeId: 49a35a2d2cbe47aab012c126035f1542
+      toSocketId: e865ffe5cd394e8e8f172f062ec7a0e2
+      worldPosition: {x: -21.5, y: 0, z: -16}
+    - graphConnectionId: d1f40ba6fa884b73b1d7052007e07d9e
+      fromNodeId: 79d554c3dec54b15a70fff1c4c6b3aee
+      fromSocketId: 7e630d126da64e9b87766629673b2972
+      toNodeId: 316fc73479514595832fe693987ea7db
+      toSocketId: 212e7f6c13a84a9fbdee8c63feb0d8e5
+      worldPosition: {x: 10.5, y: 0, z: -16}
+    - graphConnectionId: 2a42f43df7e44d0c97556437aee997b7
+      fromNodeId: 316fc73479514595832fe693987ea7db
+      fromSocketId: e865ffe5cd394e8e8f172f062ec7a0e2
+      toNodeId: e3cc4549ac794f71ae32673e7a62420c
+      toSocketId: e865ffe5cd394e8e8f172f062ec7a0e2
+      worldPosition: {x: 19, y: 0, z: -24.5}
+    - graphConnectionId: d24409e737264a84b030a0edd314f9af
+      fromNodeId: e3cc4549ac794f71ae32673e7a62420c
+      fromSocketId: 212e7f6c13a84a9fbdee8c63feb0d8e5
+      toNodeId: a840eeeffc834915b8662629071c5758
+      toSocketId: 700b9de1370145bbb44266294abab613
+      worldPosition: {x: 27.5, y: 0, z: -33}
+    - graphConnectionId: 191f5756d69a4cb29650c131f04e2c35
+      fromNodeId: 4730cc8dd65947cea4ea93e0cfa52bf4
+      fromSocketId: 17867d820cd94de5b8044afa444de26e
+      toNodeId: 5113d40487114f2e9fd902e1db507840
+      toSocketId: c7274fc8c71c492aa973e263098486a2
+      worldPosition: {x: -5.5, y: 0, z: 14}
+    - graphConnectionId: 2d899b5df62d45e7b72114075ac8f2a6
+      fromNodeId: 5113d40487114f2e9fd902e1db507840
+      fromSocketId: 8240da6516e941ac96e5ef72e69755bc
+      toNodeId: b930653bd65c4f69bdb95cd12948bb2b
+      toSocketId: 72caa2ea52e34f02be4743d8a3f10c47
+      worldPosition: {x: 0, y: 0, z: 5.5}
+    - graphConnectionId: 18d80ec721514bcda1c46c4a6ee2e50e
+      fromNodeId: 5113d40487114f2e9fd902e1db507840
+      fromSocketId: bd93061556f64c6e8c04502ef0bd7474
+      toNodeId: 9783ef32428a4dcaab306b42541034b1
+      toSocketId: 212e7f6c13a84a9fbdee8c63feb0d8e5
+      worldPosition: {x: 5.5, y: 0, z: 14}
+  layoutRootNodeId: b930653bd65c4f69bdb95cd12948bb2b
+  generatedPrefab: {fileID: 7848749031116192280, guid: 3e6557d6b74663b43b8c30e65a03cef8, type: 3}
+  lastBuildUtc: 2026-10-07T10:12:26.7845652Z

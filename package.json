@@ -1,0 +1,25 @@
+{
+  "name": "com.matcodeew.procedural-level-toolkit",
+  "version": "0.1.0",
+  "displayName": "Procedural Level Toolkit",
+  "description": "A modular Unity toolkit for creating, editing and generating procedural room-based levels directly inside the Unity Editor.",
+  "unity": "6000.3",
+  "author": {
+    "name": "Matcodeew"
+  },
+  "keywords": [
+    "procedural",
+    "level",
+    "generation",
+    "room",
+    "editor",
+    "toolkit"
+  ],
+  "samples": [
+    {
+      "displayName": "Default Level",
+      "description": "Example rooms and level configuration demonstrating the Procedural Level Toolkit.",
+      "path": "Samples~/BasicDungeon"
+    }
+  ]
+}
